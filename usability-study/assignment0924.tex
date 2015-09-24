@@ -3,6 +3,7 @@
 \usepackage{geometry}
 \usepackage{graphicx}
 \usepackage{colortbl}
+\usepackage{wrapfig}
 
 \geometry{margin=1in}
 
@@ -120,11 +121,11 @@ For errors, OneDrive had one more error in total for the first task, whereas Goo
 
 The first task involved creating, editing, renaming, and sharing a file. In this area OneDrive beat Google Drive for new users by 4.4 seconds, and lost by just 0.6 seconds experienced users. 
 
-I believe OneDrive's success among new users is due, primarily, to its similarity with Microsoft Word. When we asked users if they had used OneDrive before, we did not ask if they had used Microsoft Word. But the software is so ubiquitous that asking it would have likely been pointless; everyone has used Microsoft Word, and many people have used it extensively. To a new user, OneDrive's interface, which is highly reminiscent of Microsoft Word, should feel very familiar.
+I believe OneDrive's success among new users is due, primarily, to its similarity with Microsoft Word. When we asked users if they had used OneDrive before, we did not ask if they had used Microsoft Word. But the software is so ubiquitous that asking it would have likely been pointless; everyone has used Microsoft Word, and many people have used it extensively. To a new user, OneDrive's interface, which is highly reminiscent of Microsoft Word, should feel very familiar (see figures 1 and 2).
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=6in]{onedrive}
+\includegraphics[width=\textwidth]{onedrive}
 \caption{OneDrive's ``Word Online'' document editor. Note it is very similar in appearance to Microsoft Word 2013}
 \end{figure}
 
@@ -132,14 +133,67 @@ As to Google Drive's success among experienced users, I suspect this is due to G
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=6in]{word}
+\includegraphics[width=\textwidth]{word}
 \caption{Microsoft Word 2013. Note the similarities between this and Figure 1}
 \end{figure}
 
 \subsection{The Second Task}
 
+\begin{wrapfigure}{l}{0.5\textwidth}
+\centering
+\includegraphics[width=0.5\textwidth]{drivecomment}
+\caption{Insert Menu in Google Drive.}
+\end{wrapfigure}
+
 The first task required the user to highlight the word ``dog'' and leave a comment for a collaborator.
 
-For new users, Google Drive was 1.3 seconds faster 
+For new users, Google Drive was 1.3 seconds faster. In both services, inexperienced users look for the insert menu. In Google Drive this is a traditional drop down menu, and in OneDrive's Word Online it's a tab. Both of these areas contain the comment button. Google Drive uses a vertical list view. In this view it's much easier to quickly look down the list until you find ``Comment'' (see figure 3). But Word Online's view is cluttered with symbols that make it hard to find the Comment button at first glance; it takes some searching of the page to find it (see figure 4).  I suspect many users pause after they hit the insert tab in OneDrive while they try to find the button, whereas Google Drive requires only a quick glance.
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{onedrivecomment}
+\caption{Insert tab of OneDrive's Word Online. Notice how hard it is to find the ``Comment'' button at first glance.}
+\end{figure}
+
+
+Experienced users were, on average, 2.6 seconds faster at this task in Google Drive than in OneDrive. The reasoning for this, I think, is very clear. Google Drive has a dedicated button in its main toolbar for leaving a comment; it does not require entering the insert menu (see figure 5).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{drivecommentbutton}
+\caption{The main toolbar in Google Drive with the Comment button circled in red.}
+\end{figure}
+
+\subsection{The Third Task}
+
+The third task was a disaster for OneDrive. At 22.1 seconds slower for new users and 11 seconds slower for experienced users with an alarming seven more errors in total, Google Drive is undoubtedly superior. I believe this is due to a variety of factors.
+
+From within the editor, finding version history in OneDrive is nearly impossible. The user must hit ``File'' and then ``Info'', and under info is the option to look at previous versions. Many users ignore the Info option in file, some giving up before they even look at it.
+
+While Google Drive has ``See revision history'' under its file menu, experienced users actually know that where Google Drive shows you how long ago the file was edited, this is actually a button that takes you to the version control view (see figure 6). Using this button makes the process incredibly quick.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{lastedited}
+\caption{Experienced Google Drive users know that the yellow-highlighted text is actually a button that leads to the revision history view.}
+\end{figure}
+
+
+\begin{wrapfigure}{l}{0.5\textwidth}
+\centering
+\includegraphics[width=0.4\textwidth]{showdetail}
+\caption{Google Drive only shows $some$ revisions. To show all of them, the user must hit the button at the bottom that says ``Show more detailed revisions''.}
+\end{wrapfigure}
+
+I would like to point out that this test was a little unfair to OneDrive for two reasons. First, we required users to revert the file from within the editor. When using OneDrive's folder view, outside the editor, I believe reverting a file is much easier in OneDrive because you can simply right click on the file and hit ``Version History''. Google Drive's right-click menu does not have this option. Instead, it has an ``activity'' list on the right-hand side when you select a file. But it is to the right and out of the way, it is not clear what the activity is or what it means, and it isn't clear that the previous versions are clickable, viewable, and revertable.
+
+Second, to simplify the test, we told the user they could choose any previous version. However, Google Drive does not show all revisions by default. To see a list of all revisions, the user must hit a button at the bottom of the list that says ``Show more detailed revisions''. Not only is this text misleading (it could mean show a larger quantity of revisions or show the currently displayed revisions in more detail), but it is unclear to the user that the list before hitting this button isn't the complete list. I know I, personally, spent minutes when setting up the tests trying to figure out why it wasn't showing all the revisions, only to discover the function of the button at the bottom. In OneDrive, one the user (miraculously) finds the version control view, it lists all the versions.
+
+\section{Conclusion}
+
+The numbers certainly suggest Google Drive has the superior interface. Though in most areas it was only marginally better, Google Drive was fairly consistently faster among experienced and inexperienced users, suggesting better learnability and efficiency. It is clear that OneDrive has serious problems in the way it handles version control, but the nature of our experiment was inherently slightly biased toward Google Drive.
+
+I'm not convinced, however, that this means Google Drive is the superior service. Google Drive has a simpler interface than OneDrive, but that's partially because it has far fewer features. Google Drive is often criticized by Microsoft Word aficionados for being underpowered. Microsoft's Word Online, though a slimmed down version of the desktop software, has a surprisingly robust feature set. Though OneDrive's interface may be a little less forgiving when working with a document that only contains the word ``dog'', its based on the interface of what is universally agreed to be the world's best desktop word processor. For more complex tasks such as working with image positioning or making complex tables, I doubt that Google Drive is as learnable or efficient as OneDrive. But for the features we tested, the numbers don't lie.
 
 \end{document}
