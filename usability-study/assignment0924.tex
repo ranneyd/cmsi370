@@ -1,0 +1,65 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{colortbl}
+
+\geometry{margin=1in}
+
+
+
+\begin{document}
+
+Du Kane
+
+CMSI 370-01
+
+September 24, 2015
+
+\begin{center}
+\section*{Assignment 0924: Usability Study}
+\subsection*{Comparing Google Drive and Microsoft OneDrive}
+\end{center}
+
+\section{Usability Metrics}
+
+\subsection{The Data}
+\begin{center}
+\footnotesize
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+		\hline
+		Tst& \multicolumn{7}{c}{Microsoft OneDrive} & \multicolumn{7}{|c|}{Google Drive} \\
+		Sub & XP&Create&E&Comnt&E&Revert&E&XP&Create&E&Comnt&E&Revert&E\\ \hline
+Ka1&N&00:35.1&0&00:10.2&0&01:15.1&2&Y&00:13.5&0&00:10.4&0&00:12.0&0\\ \hline
+Ka2&N&00:45.1&0&00:51.2&1&00:45.6&0&N&00:30.6&0&00:13.8&0&00:14.9&0\\ \hline
+Ka3&N&00:23.2&0&00:26.5&0&00:41.3&0&N&00:19.7&0&00:52.6&1&00:47.2&0\\ \hline
+Ka3&Y&00:13.4&0&00:17.8&0&00:24.4&0&Y&00:11.6&0&00:08.7&0&00:19.5&0\\ \hline
+Su1&N&01:02.7&0&00:33.0&1&00:47.6&0&Y&00:20.4&0&00:14:5&2&00:24.7&0\\ \hline
+Su1&Y&00:20.6&0&00:07.9&0&00:56.5&0&Y&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}\\ \hline
+Su2&N&00:59.0&0&00:24.7&0&00:24.8&0&Y&00:32.0&0&00:17.0&0&00:19.1&0\\ \hline
+Su2&Y&00:19.3&0&00:14.7&0&00:45.3&0&N&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}\\ \hline
+Su3&N&00:34.4&0&00:11.4&0&00:36.6&0&Y&00:16.2&0&00:10.7&0&00:54.4&0\\ \hline
+Su4&N&00:44.8&0&00:13.5&0&01:29.2&0&Y&00:17.9&0&00:07.5&0&00:15.7&0\\ \hline
+Su4&Y&00:23.5&0&00:07.3&0&00:36.0&0&Y&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}\\ \hline
+Su5&N&00:58.8&0&00:10.8&0&00:37.7&0&Y&00:11.3&0&00:08.9&0&00:09.3&0\\ \hline
+Su5&Y&00:15.1&0&00:15.9&0&00:27.3&0&Y&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}&\cellcolor[gray]{0.3}\\ \hline
+Su6&N&02:11.2&0&00:16.3&0&00:48.1&0&N&01:06.3&0&00:09.2&0&00:52.0&0\\ \hline
+Su6&Y&00:34.2&0&00:08.0&0&00:28.6&0&Y&00:28.3&0&00:05.8&0&00:12.7&0\\ \hline
+Su7&N&00:47.4&0&01:02.0&0&03:22.3&0&Y&00:29.9&0&00:10.6&0&00:30.3&0\\ \hline
+Du1&N&03:30.0&1&00:42.0&1&03:47.0&2&N&01:43.0&1&01:33.0&1&00:30.0&0\\ \hline
+Du2&N&01:58.0&0&00:16.0&0&01:34.0&2&N&02:22.0&2&00:17.0&0&01:35.0&2\\ \hline
+Du3&Y&00:24.4&0&00:11.2&1&00:14.8&0&Y&00:22.1&0&00:07.0&1&00:19.6&1\\ \hline
+Ku1&N&00:34:0&1&00:24:3&0&00:46:0&2&N&00:28:2&0&00:15:3&0&00:32:2&0\\ \hline
+Ku1&Y&00:15:1&0&00:17:5&0&00:30:4&0&Y&00:11:5&0&00:11:1&0&00:19:3&0\\ \hline
+Ku2&N&01:10:2&2&00:32:0&0&00:48:2&1&N&00:46:2&0&00:35:2&0&00:38:3&1\\ \hline
+Ku3&N&00:53:4&0&00:22:7&0&00:36:2&0&N&00:38:3&0&00:23:0&0&00:30:4&0\\ \hline
+Ku3&Y&00:28:5&0&00:15:2&0&00:30:3&0&Y&00:30:4&0&00:18:2&0&00:22:4&0\\ \hline
+Ku4&N&00:45:8&0&00:23:4&0&01:03:1&1&N&00:36:1&0&00:28:7&0&00:40:1&0\\ \hline
+Ku5&Y&00:10:2&0&00:15:2&0&00:22:5&1&Y&00:12:3&0&00:05:5&0&00:09:2&0\\ \hline
+\end{tabular}
+\end{center}
+\section{Heuristic Evaluation}
+
+Your text goes here
+
+\end{document}
