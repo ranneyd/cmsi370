@@ -2,78 +2,12 @@
 <html>
 <head>
 	<title>Radiation: A More Cancerous Twitch.tv</title>
-	<style type="text/css">
-		html,body{
-			width:100%;
-			height:100%;
-			position:relative;
-			padding:0px;
-			margin:0px;
-			overflow: hidden;
-		}
-		#stream{
-			width:100%;
-			height:100%;
-			border:none;
-			padding:0px;
-			margin:0px;
-		}
-		#chat-div{
-			width:400px;
-			height:400px;
-			position: absolute;
-			top:0px;
-			left:0px;
-			z-index: 200;
-			padding:0px;
-			margin:0px;
-			overflow: hidden;
-			background-color: rgba(30,30,30,0.7);
-		}
-		#chat-div>div.dragger{
-			position: absolute;
-			width:100%;
-			height:40px;
-			top:1px;
-			left:40px;
-			z-index:300;
-			cursor:move;
-		}
-		#chat{
-			width:100%;
-			height:90%;
-			border:none;
-			padding:0px;
-			margin:0px;
-			position: absolute;
-			top:0px;
-			left:0px;
-			opacity:0.7;
-
-		}
-		#controls{
-			position: absolute;
-			width:100%;
-			height:10%;
-			bottom:0px;
-			left:0px;
-			cursor:move;
-		}
-		#controls > button{
-			cursor: pointer;
-		}
-		.block-click{
-			position: absolute;
-			top:-28px;
-			left:0px;
-			width:100%;
-			height:100%;
-			z-index:100;
-		}
-	</style>
-	<link rel="stylesheet" type="text/css" href="jquery-ui.min.css">
-	<script type="text/javascript" src="jquery-2.1.4.min.js"></script>
-	<script type="text/javascript" src="jquery-ui.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css">
+	<script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
 
 </head>
 <body>
@@ -85,16 +19,20 @@
 <div class="block-click">
 </div>
 <div id="chat-div">
-	<!-- This lets you drag using the top of the chat window but still lets
-	     you click on the more chats icon -->
-	<div class="dragger">
-	</div>
 	<iframe frameborder="0" 
 		        scrolling="no" 
 		        id="chat">
 	</iframe>
 	<div id="controls">
-	<button>Options</button>
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+				<a class="navbar-brand"></a>
+				<ul class="nav navbar-nav">
+					<li><a>test</a></li>
+					<li><a>also test</a></li>
+				</ul>
+			</div>
+		</nav>
 	</div>
 </div>
 <iframe frameborder="0" 
@@ -104,6 +42,7 @@
 <script type="text/javascript">
 var channel = "nl_kripp";
 channel = channel.toLowerCase();
+$(".navbar-brand").attr("href", "http://www.twitch.tv/" + channel).html(channel);
 $("#stream").attr("src", "http://www.twitch.tv/"+channel+"/embed");
 $("#chat").attr("src", "http://www.twitch.tv/"+channel+"/chat");
 
