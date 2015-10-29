@@ -18,7 +18,8 @@
      about 28 pixels -->
 <div class="block-click">
 </div>
-<div id="chat-div">
+<div id="chat-div" style="top:10%;left:0px;height:80%;width:400px;opacity:0.9;
+">
 	<iframe frameborder="0" 
 		        scrolling="no" 
 		        id="chat">
@@ -26,10 +27,10 @@
 	<div id="controls">
 		<nav class="navbar navbar-inverse">
 			<div class="container-fluid">
-				<a class="navbar-brand"></a>
+				<a class="navbar-brand channel-name" data-toggle="modal" data-target="#info"></a>
 				<ul class="nav navbar-nav">
-					<li><a>test</a></li>
-					<li><a>also test</a></li>
+					<li><a data-toggle="modal" data-target="#options">Options</a></li>
+					<li><a data-toggle="modal" data-target="#channels">Channels</a></li>
 				</ul>
 			</div>
 		</nav>
@@ -39,15 +40,102 @@
         scrolling="no" 
         id="stream">
 </iframe>
+<div class="modal fade" id="info" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h1 class="modal-title" id="info-title"><img class="logo"><span></span></h1>
+      </div>
+      <div class="modal-body" id="info-modal-body">
+      	<h2 id="stream-title"><span></span></h2>
+      	<p id="viewers">Viewers: <span></span></p>
+      	<p id="total-views">Total Views: <span></span></p>
+      	<p id="Followers">Followers: <span></span></p>
+        <a>Go to stream on twitch.tv</a>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="options" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Options</h4>
+      </div>
+      <div class="modal-body" id="options-modal-body">
+      <h2>Chat Options</h2>
+      	<form id="chat-options"> 
+      		<div class="form-group">
+			    <label for="width">width</label>
+			    <input type="text" class="form-control" id="width" placeholder="400px">
+		  	</div>
+		  	<div class="form-group">
+			    <label for="height">height</label>
+			    <input type="text" class="form-control" id="height" placeholder="80%">
+		  	</div>
+		  	<div class="form-group">
+			    <label for="top">top</label>
+			    <input type="text" class="form-control" id="top" placeholder="10%">
+		  	</div>
+		  	<div class="form-group">
+			    <label for="left">left</label>
+			    <input type="text" class="form-control" id="left" placeholder="0px">
+		  	</div>
+		  	<div class="form-group">
+			    <label for="opacity">opacity</label>
+			    <input type="text" class="form-control" id="opacity" placeholder="0.9">
+		  	</div>
+      	</form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script type="text/javascript">
+function updateInfo(){
+	$.get("https://api.twitch.tv/kraken/streams/"+channel, function( data ){
+		console.log(data);
+		$("img.logo").attr("src", data.stream.channel.logo);
+		$("#info-title > span").html(channel);
+		$("#stream-title > span").html(data.stream.channel.status);
+		$("#viewers > span").html(data.stream.viewers);
+		$("#total-views > span").html(data.stream.channel.views);
+		$("#followers > span").html(data.stream.channel.followers);
+
+	})
+	$("#info-modal-body > a").attr("href", "http://www.twitch.tv/"+channel);
+}
+
 var channel = "nl_kripp";
 channel = channel.toLowerCase();
-$(".navbar-brand").attr("href", "http://www.twitch.tv/" + channel).html(channel);
+$(".channel-name").html(channel);
 $("#stream").attr("src", "http://www.twitch.tv/"+channel+"/embed");
 $("#chat").attr("src", "http://www.twitch.tv/"+channel+"/chat");
 
+updateInfo();
 
+$("#chat-options input").change(function(){
+	switch($(this).attr("id")) {
+		case "width":
 
+			break;
+		case "height":
+			break;
+		case "top":
+			break;
+		case "left":
+			break;
+		default:
+			break;
+	}
+});
 
 
 $("#chat-div").resizable({ handles: 'n, e, s, w, ne, nw, se, sw'}).draggable();
