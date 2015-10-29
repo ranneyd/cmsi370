@@ -28,9 +28,16 @@
 		<nav class="navbar navbar-inverse">
 			<div class="container-fluid">
 				<a class="navbar-brand channel-name" data-toggle="modal" data-target="#info"></a>
-				<ul class="nav navbar-nav">
-					<li><a data-toggle="modal" data-target="#options">Options</a></li>
-					<li><a data-toggle="modal" data-target="#channels">Channels</a></li>
+				<ul class="nav navbar-nav navbar-left">
+					<li><a data-toggle="modal" data-target="#options"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></a></li>
+					<li><a data-toggle="modal" data-target="#channels"><span class="glyphicon glyphicon-th" aria-hidden="true"></span></a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li style="float:right">
+						<a id="minimize">
+							<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+						</a>
+					</li>
 				</ul>
 			</div>
 		</nav>
@@ -69,6 +76,8 @@
       </div>
       <div class="modal-body" id="options-modal-body">
       <div class="alert alert-success" role="alert">Radiation works best with the <a href="https://chrome.google.com/webstore/detail/betterttv/ajopnjidmegmdimjlfnijceegpefgped?hl=en">Better Twitch TV Chrome extension</a>. Download the extension and in the Twitch chat settings, set it to "Dark Mode".</div>
+      <h2>Stream Options</h2>
+		<button type="button" class="btn btn-primary btn-lg btn-block" id="click-block-toggle">Let me click inside the stream</button>
       <h2>Chat Options</h2>
       	<form id="chat-options"> 
       		<div class="form-group">

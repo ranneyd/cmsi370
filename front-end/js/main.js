@@ -1,3 +1,4 @@
+
 function updateInfo(){
 	$.get("https://api.twitch.tv/kraken/streams/"+channel, function( data ){
 		if(data.stream){
@@ -31,17 +32,48 @@ $("#chat-options input").change(function(){
 		changeChatValue($(this).attr("id"), $(this).val());
 });
 
+$("#click-block-toggle").click(function(){
+	//Turn screen off
+	if($(this).hasClass("btn-primary")){
+		$(this).removeClass("btn-primary")
+			.addClass("btn-default")
+			.html("Block me from accidentally clicking on the stream");
+		$(".block-click").hide();
+	}
+	else{
+		$(this).removeClass("btn-default")
+			.addClass("btn-primary")
+			.html("Let me click inside the stream");
+		$(".block-click").show();
+	}
+});
+$("#minimize").click(function(){
+	var button_label = $($(this).find("span")[0]);
+	if(button_label.hasClass("glyphicon-minus")){
+		$(this).attr("data-og-height", $("#chat-div").css("height"));
+		$("#chat-div").resizable("disable");
+		$("#chat").slideUp();
+		$("#chat-div").animate({"height":"50px"});
+		button_label.removeClass("glyphicon-minus").addClass("glyphicon-plus");
+	}
+	else{
+		$("#chat-div").resizable("enable");
+		$("#chat").slideDown();
+		$("#chat-div").animate({"height":$(this).attr("data-og-height")});
+		button_label.removeClass("glyphicon-plus").addClass("glyphicon-minus");
+	}
+});
 
 $("#chat-div").resizable({
 	handles: 'n, e, s, w, ne, nw, se, sw',
 	resize: function(event, ui){
-		changeChatValue("width", ui.size.width);
-		changeChatValue("height", ui.size.height);
+		changeChatValue("width", ui.size.width + "px");
+		changeChatValue("height", ui.size.height + "px");
 	}
 }).draggable({
 	drag: function(event, ui){
-		changeChatValue("top", ui.position.top);
-		changeChatValue("left", ui.position.left);
+		changeChatValue("top", ui.position.top + "px");
+		changeChatValue("left", ui.position.left + "px");
 	}
 });
 function changeChatValue(type, val){
@@ -66,19 +98,22 @@ function changeChatValue(type, val){
 }
 function setFromCookie(){
 	var cookieValue = document.cookie;
-	var width = cookieValue.replace(new RegExp("^.*"+channel+"width\s*=\s*([^;]*);.*$", "i"), "$1");
-	var height = cookieValue.replace(new RegExp("^.*"+channel+"height\s*=\s*([^;]*);.*$", "i"), "$1");
-	var top = cookieValue.replace(new RegExp("^.*"+channel+"top\s*=\s*([^;]*);.*$", "i"), "$1");
-	var left = cookieValue.replace(new RegExp("^.*"+channel+"left\s*=\s*([^;]*);.*$", "i"), "$1");
-	var opacity = cookieValue.replace(new RegExp("^.*"+channel+"opacity\s*=\s*([^;]*);.*$", "i"), "$1");
+	var matchCookie = function(prop){
+		return new RegExp("^.*"+channel+prop+"\s*=\s*([^;]*)(;.*$|$)", "i");
+	}
+	var width = cookieValue.replace(matchCookie("width"), "$1");
+	var height = cookieValue.replace(matchCookie("height"), "$1");
+	var top = cookieValue.replace(matchCookie("top"), "$1");
+	var left = cookieValue.replace(matchCookie("left"), "$1");
+	var opacity = cookieValue.replace(matchCookie("opacity"), "$1");
 	if(width)
-		changeChatValue("width", width);
+		$("#chat-div").css("width", width);
 	if(height)
-		changeChatValue("height", height);
+		$("#chat-div").css("height", height);
 	if(top)
-		changeChatValue("top", top);
+		$("#chat-div").css("top", top);
 	if(left)
-		changeChatValue("left", left);
+		$("#chat-div").css("left", left);
 	if(opacity)
-		changeChatValue("opacity", opacity);
+		$("#chat-div").css("opacity", opacity);
 }
