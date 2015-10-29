@@ -118,7 +118,6 @@
 <script type="text/javascript">
 function updateInfo(){
 	$.get("https://api.twitch.tv/kraken/streams/"+channel, function( data ){
-		console.log(data);
 		$("img.logo").attr("src", data.stream.channel.logo);
 		$("#info-title > span").html(channel);
 		$("#stream-title > span").html(data.stream.channel.status);
@@ -138,45 +137,48 @@ $("#chat").attr("src", "http://www.twitch.tv/"+channel+"/chat");
 
 updateInfo();
 
+var cookieValue = document.cookie;
+
+
 $("#chat-options input").change(function(){
-	if($(this).val()){
-		switch($(this).attr("id")) {
-			case "width":
-				$("#chat-div").css("width", $(this).val());
-				break;
-			case "height":
-				$("#chat-div").css("height", $(this).val());
-				break;
-			case "top":
-				$("#chat-div").css("top", $(this).val());
-				break;
-			case "left":
-				$("#chat-div").css("left", $(this).val());
-				break;
-			default:
-				$("#chat-div").css("opacity", $(this).val());
-				break;
-		}
-	}
+	if($(this).val())
+		changeChatValue($(this).attr("id"), $(this).val());
 });
 
 
 $("#chat-div").resizable({
 	handles: 'n, e, s, w, ne, nw, se, sw',
 	resize: function(event, ui){
-		$("#width").val(ui.size.width);
-		$("#chat-div").css("width", ui.size.width);
-		$("#height").val(ui.size.height);
-		$("#chat-div").css("height", ui.size.height);
+		changeChatValue("width", ui.size.width);
+		changeChatValue("height", ui.size.height);
 	}
 }).draggable({
 	drag: function(event, ui){
-		$("#top").val(ui.position.top);
-		$("#chat-div").css("top", ui.position.top);
-		$("#left").val(ui.position.left);
-		$("#chat-div").css("left", ui.position.left);
+		changeChatValue("top", ui.position.top);
+		changeChatValue("left", ui.position.left);
 	}
 });
+function changeChatValue(type, val){
+	switch(type){
+		case "width":
+			$("#chat-div").css("width", val);
+			break;
+		case "height":
+			$("#chat-div").css("height", val);
+			break;
+		case "top":
+			$("#chat-div").css("top", val);
+			break;
+		case "left":
+			$("#chat-div").css("left", val);
+			break;
+		default:
+			$("#chat-div").css("opacity", val);
+			break;
+	}
+	document.cookie = channel+type+"="+val;
+	console.log(document.cookie);
+}
 </script>
 </body>
 </html>
