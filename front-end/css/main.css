@@ -76,3 +76,35 @@ nav a{
     -ms-user-select: none;
     user-select: none;
 }
+div.channel-thumb {
+	width:300px;
+	display:inline-block;
+	margin:0px 15px 0px 15px;
+	vertical-align: top;
+}
+div.channel-thumb h4{
+	text-align: center;
+}
+div.channel-thumb img{
+	max-width:100%;
+	max-height: 100%;
+}
+div.channel-thumb > div.panel-body{
+	height:185px;
+	text-align: center;
+}
+#add-new button{
+	font-size:2em;
+	height:100%;
+	width:100%;
+}
+#add-new input{
+	width:100%;
+}
+#channels-modal-body{
+	overflow: scroll;
+	white-space: nowrap;
+}
+#channels div.modal-dialog{
+	width:60%;
+}

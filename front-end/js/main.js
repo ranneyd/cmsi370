@@ -1,31 +1,16 @@
-
-function updateInfo(){
-	$.get("https://api.twitch.tv/kraken/streams/"+channel, function( data ){
-		if(data.stream){
-			$("#viewers > span").html(data.stream.viewers);
-		}
-		else{
-			$("#viewers > span").html("<strong>OFFLINE</strong>");
-		}
-	});
-	$.get("https://api.twitch.tv/kraken/channels/"+channel, function( data ){
-		$("img.logo").attr("src", data.logo);
-		$("#info-title > span").html(channel);
-		$("#stream-title > span").html(data.status);
-		$("#total-views > span").html(data.views);
-		$("#followers > span").html(data.followers);
-	});
-	$("#info-modal-body > a").attr("href", "http://www.twitch.tv/"+channel);
+var channels = [];
+var cookieValue = document.cookie;
+var channelString = cookieValue.replace(/^.*channels\s*=\s*([^;]*)(;.*$|$)/,"$1");
+if(channelString !== cookieValue){
+	channels = channelString.split("-");
+}
+for(var i in channels){
+	addChannel(channels[i]);
 }
 
-var channel = "playhearthstone";
-channel = channel.toLowerCase();
-$(".channel-name").html(channel);
-$("#stream").attr("src", "http://www.twitch.tv/"+channel+"/embed");
-$("#chat").attr("src", "http://www.twitch.tv/"+channel+"/chat");
+$("#channels").modal('show');
 
-updateInfo();
-setFromCookie();
+var channel;
 
 $("#chat-options input").change(function(){
 	if($(this).val())
@@ -116,4 +101,68 @@ function setFromCookie(){
 		$("#chat-div").css("left", left);
 	if(opacity)
 		$("#chat-div").css("opacity", opacity);
+}
+
+function updateInfo(){
+	$.get("https://api.twitch.tv/kraken/streams/"+channel, function( data ){
+		if(data.stream){
+			$("#viewers > span").html(data.stream.viewers);
+		}
+		else{
+			$("#viewers > span").html("<strong>OFFLINE</strong>");
+		}
+	});
+	$.get("https://api.twitch.tv/kraken/channels/"+channel, function( data ){
+		$("img.logo").attr("src", data.logo);
+		$("#info-title > span").html(channel);
+		$("#stream-title > span").html(data.status);
+		$("#total-views > span").html(data.views);
+		$("#followers > span").html(data.followers);
+	});
+	$("#info-modal-body > a").attr("href", "http://www.twitch.tv/"+channel);
+}
+
+$("#add-new button").click(function(){
+	var channel = $($("#add-new input")[0]).val();
+	channels.push(channel);
+	document.cookie = "channels=" + channels.join("-");
+	addChannel(channel);
+});
+
+function addChannel(channel){
+$.get("https://api.twitch.tv/kraken/streams/"+channel, function( data ){
+	var makeThumb = function(image, caption){
+		$('<div>')
+			.attr("class","panel panel-default channel-thumb")
+			.attr("data-channel", channel)
+			.css("cursor","pointer")
+			.append(
+				$("<div>").attr("class", "panel-body")
+				.html("<img class='img-thumbnail' src='"+image+"'>")
+			).append(
+				$("<div>")
+					.attr("class", "panel-footer")
+					.html("<h4>"+caption+ "</h4>")
+			).click(function(){
+				channel = $(this).attr("data-channel");
+				channel = channel.toLowerCase();
+				$(".channel-name").html(channel);
+				$("#stream").attr("src", "http://www.twitch.tv/"+channel+"/embed");
+				$("#chat").attr("src", "http://www.twitch.tv/"+channel+"/chat");
+
+				updateInfo();
+				setFromCookie();
+				$("#channels").modal('hide');
+			})
+			.appendTo("#channels-modal-body");
+	}
+	if(data.stream){
+		makeThumb(data.stream.preview.medium, channel + " playing " + data.stream.game);
+	}
+	else{
+		$.get("https://api.twitch.tv/kraken/channels/"+channel, function( data ){
+			makeThumb(data.logo, caption = channel + " (OFFLINE)")
+		});
+	}
+});
 }
