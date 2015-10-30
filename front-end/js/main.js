@@ -10,7 +10,6 @@ for(var i in channels){
 
 $("#channels").modal('show');
 
-var channel;
 
 $("#chat-options input").change(function(){
 	if($(this).val())
@@ -81,7 +80,7 @@ function changeChatValue(type, val){
 	}
 	document.cookie = channel+type+"="+val;
 }
-function setFromCookie(){
+function setFromCookie(channel){
 	var cookieValue = document.cookie;
 	var matchCookie = function(prop){
 		return new RegExp("^.*"+channel+prop+"\s*=\s*([^;]*)(;.*$|$)", "i");
@@ -103,7 +102,7 @@ function setFromCookie(){
 		$("#chat-div").css("opacity", opacity);
 }
 
-function updateInfo(){
+function updateInfo(channel){
 	$.get("https://api.twitch.tv/kraken/streams/"+channel, function( data ){
 		if(data.stream){
 			$("#viewers > span").html(data.stream.viewers);
@@ -144,14 +143,14 @@ $.get("https://api.twitch.tv/kraken/streams/"+channel, function( data ){
 					.attr("class", "panel-footer")
 					.html("<h4>"+caption+ "</h4>")
 			).click(function(){
-				channel = $(this).attr("data-channel");
+				var channel = $(this).attr("data-channel");
 				channel = channel.toLowerCase();
 				$(".channel-name").html(channel);
 				$("#stream").attr("src", "http://www.twitch.tv/"+channel+"/embed");
 				$("#chat").attr("src", "http://www.twitch.tv/"+channel+"/chat");
 
-				updateInfo();
-				setFromCookie();
+				updateInfo(channel);
+				setFromCookie(channel);
 				$("#channels").modal('hide');
 			})
 			.appendTo("#channels-modal-body");
