@@ -1,3 +1,4 @@
+var global_channel;
 var channels = [];
 var cookieValue = document.cookie;
 var channelString = cookieValue.replace(/^.*channels\s*=\s*([^;]*)(;.*$|$)/,"$1");
@@ -10,6 +11,9 @@ for(var i in channels){
 
 $("#channels").modal('show');
 
+$("#channel-info").click(function(){
+	updateInfo(global_channel);
+});
 
 $("#chat-options input").change(function(){
 	if($(this).val())
@@ -102,8 +106,8 @@ function setFromCookie(channel){
 		$("#chat-div").css("opacity", opacity);
 }
 
-function updateInfo(channel){
-	$.get("https://api.twitch.tv/kraken/streams/"+channel, function( data ){
+function updateInfo(){
+	$.get("https://api.twitch.tv/kraken/streams/"+global_channel, function( data ){
 		if(data.stream){
 			$("#viewers > span").html(data.stream.viewers);
 		}
@@ -111,14 +115,14 @@ function updateInfo(channel){
 			$("#viewers > span").html("<strong>OFFLINE</strong>");
 		}
 	});
-	$.get("https://api.twitch.tv/kraken/channels/"+channel, function( data ){
+	$.get("https://api.twitch.tv/kraken/channels/"+global_channel, function( data ){
 		$("img.logo").attr("src", data.logo);
-		$("#info-title > span").html(channel);
+		$("#info-title > span").html(global_channel);
 		$("#stream-title > span").html(data.status);
 		$("#total-views > span").html(data.views);
 		$("#followers > span").html(data.followers);
 	});
-	$("#info-modal-body > a").attr("href", "http://www.twitch.tv/"+channel);
+	$("#info-modal-body > a").attr("href", "http://www.twitch.tv/"+global_channel);
 }
 
 $("#add-new button").click(function(){
@@ -148,8 +152,8 @@ $.get("https://api.twitch.tv/kraken/streams/"+channel, function( data ){
 				$(".channel-name").html(channel);
 				$("#stream").attr("src", "http://www.twitch.tv/"+channel+"/embed");
 				$("#chat").attr("src", "http://www.twitch.tv/"+channel+"/chat");
+				global_channel = channel;
 
-				updateInfo(channel);
 				setFromCookie(channel);
 				$("#channels").modal('hide');
 			})
