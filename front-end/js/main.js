@@ -57,6 +57,10 @@ $("#chat-div").resizable({
 	resize: function(event, ui){
 		changeChatValue("width", ui.size.width + "px");
 		changeChatValue("height", ui.size.height + "px");
+
+		// Resizing can affect these values too
+		changeChatValue("top", ui.position.top + "px");
+		changeChatValue("left", ui.position.left + "px");
 	}
 }).draggable({
 	drag: function(event, ui){
@@ -82,7 +86,7 @@ function changeChatValue(type, val){
 			$("#chat-div").css("opacity", val);
 			break;
 	}
-	document.cookie = channel+type+"="+val;
+	document.cookie = global_channel+type+"="+val;
 }
 function setFromCookie(channel){
 	var cookieValue = document.cookie;
@@ -135,7 +139,8 @@ $("#add-new button").click(function(){
 function addChannel(channel){
 $.get("https://api.twitch.tv/kraken/streams/"+channel, function( data ){
 	var makeThumb = function(image, caption){
-		$('<div>')
+		$("#add-new").after(
+			$('<div>')
 			.attr("class","panel panel-default channel-thumb")
 			.attr("data-channel", channel)
 			.css("cursor","pointer")
@@ -157,7 +162,7 @@ $.get("https://api.twitch.tv/kraken/streams/"+channel, function( data ){
 				setFromCookie(channel);
 				$("#channels").modal('hide');
 			})
-			.appendTo("#channels-modal-body");
+		);
 	}
 	if(data.stream){
 		makeThumb(data.stream.preview.medium, channel + " playing " + data.stream.game);

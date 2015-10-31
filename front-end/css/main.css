@@ -108,3 +108,19 @@ div.channel-thumb > div.panel-body{
 #channels div.modal-dialog{
 	width:60%;
 }
+.channel-remove-button{
+	margin-top: -8px;
+	float:right;
+}
+#chat-options input{
+	width:175px;
+	margin-right:25px;
+}
+#chat-options label{
+	width:75px;
+}
+img.emote{
+	display: inline;
+	width: auto;
+	overflow: hidden;
+}
