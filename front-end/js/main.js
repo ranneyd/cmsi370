@@ -11,9 +11,8 @@ $("#channel-button").click(function(){
 
 });
 
-$("#chat-options input").change(function(){
-	if($(this).val())
-		changeChatValue($(this).attr("id"), $(this).val());
+$("#chat-options input").keyup(function(){
+	changeChatValue($(this).attr("id"), $(this).val());
 });
 
 $("#click-block-toggle").click(function(){
