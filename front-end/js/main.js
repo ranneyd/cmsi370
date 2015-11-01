@@ -1,53 +1,18 @@
+/*************************Setup*****************************/
+
+// this is the current channel we're watching
 var global_channel;
+// This is the list of channels to pick from
 var channels = [];
+// This gets all the data about our channels and loads it up
 resetChannels();
 
+// We need to select a channel first-thing, so show this modal
 $("#channels").modal('show');
 
-$("#channel-info").click(function(){
-	updateInfo(global_channel);
-});
-$("#channel-button").click(function(){
-
-});
-
-$("#chat-options input").keyup(function(){
-	changeChatValue($(this).attr("id"), $(this).val());
-});
-
-$("#click-block-toggle").click(function(){
-	//Turn screen off
-	if($(this).hasClass("btn-primary")){
-		$(this).removeClass("btn-primary")
-			.addClass("btn-default")
-			.html("Block me from accidentally clicking on the stream");
-		$(".block-click").hide();
-	}
-	else{
-		$(this).removeClass("btn-default")
-			.addClass("btn-primary")
-			.html("Let me click inside the stream");
-		$(".block-click").show();
-	}
-});
-$("#minimize").click(function(){
-	var button_label = $($(this).find("span")[0]);
-	if(button_label.hasClass("glyphicon-minus")){
-		$(this).attr("data-og-height", $("#chat-div").css("height"));
-		$("#chat-div").resizable("disable");
-		$("#chat").slideUp();
-		$("#chat-div").animate({"height":"50px"});
-		button_label.removeClass("glyphicon-minus").addClass("glyphicon-plus");
-	}
-	else{
-		$("#chat-div").resizable("enable");
-		$("#chat").slideDown();
-		$("#chat-div").animate({"height":$(this).attr("data-og-height")});
-		button_label.removeClass("glyphicon-plus").addClass("glyphicon-minus");
-	}
-});
-
+// Set up the JQuery UI resizable and draggable stuff
 $("#chat-div").resizable({
+	// You can resize it from any side/corner
 	handles: 'n, e, s, w, ne, nw, se, sw',
 	resize: function(event, ui){
 		changeChatValue("width", ui.size.width + "px");
@@ -63,6 +28,73 @@ $("#chat-div").resizable({
 		changeChatValue("left", ui.position.left + "px");
 	}
 });
+
+/*************************events*****************************/
+
+// I want the info about the channel (viewers, name, followers etc) to always be
+// accurate. So it updates when you click to open the modal.
+$("#channel-info").click(function(){
+	updateInfo(global_channel);
+});
+// I want the previews and information about which channels are online to always
+// be accurate, so I update it when the user clicks the channel selector.
+$("#channel-select").click(function(){
+	resetChannels();
+});
+
+// I want the chat window values to update immediately as the user types them
+// If not, they have to hit enter and stuff and there are issues
+$("#chat-options input").keyup(function(){
+	changeChatValue($(this).attr("id"), $(this).val());
+});
+
+
+// Big blue button in the options menu
+$("#click-block-toggle").click(function(){
+	// Turn off blocker
+	if($(this).hasClass("btn-primary")){
+		$(this).removeClass("btn-primary")
+			.addClass("btn-default")
+			.html("Block me from accidentally clicking on the stream");
+		$(".block-click").hide();
+	}
+	else{
+		$(this).removeClass("btn-default")
+			.addClass("btn-primary")
+			.html("Let me click inside the stream");
+		$(".block-click").show();
+	}
+});
+// roll up the chat window
+$("#minimize").click(function(){
+	var icon = $($(this).find("span")[0]);
+	// Roll up
+	if(icon.hasClass("glyphicon-minus")){
+		// Save as an html attribute the height we're returning to
+		$(this).attr("data-og-height", $("#chat-div").css("height"));
+		// We don't want it resizable when it's minimized
+		$("#chat-div").resizable("disable");
+		// Yay animations!
+		$("#chat-div").animate({"height":"50px"});
+		icon.removeClass("glyphicon-minus").addClass("glyphicon-plus");
+	}
+	else{
+		$("#chat-div").resizable("enable");
+		$("#chat-div").animate({"height":$(this).attr("data-og-height")});
+		icon.removeClass("glyphicon-plus").addClass("glyphicon-minus");
+	}
+});
+// Add a new channel
+$("#add-new button").click(function(){
+	var channel = $($("#add-new input")[0]).val();
+	channels.push(channel);
+	document.cookie = "channels=" + channels.join("-");
+	addChannel(channel);
+});
+
+/*************************functions*****************************/
+
+// Change style "type" to val of the chat window
 function changeChatValue(type, val){
 	switch(type){
 		case "width":
@@ -83,9 +115,17 @@ function changeChatValue(type, val){
 	}
 	document.cookie = global_channel+type+"="+val;
 }
+// Set chat window styles from cookies for "channel"
 function setFromCookie(channel){
 	var cookieValue = document.cookie;
 	var matchCookie = function(prop){
+		// Cookies are of the form "channeltype=value". This matches that
+		// The cookies are in one giant string so we match previous cookies
+		// with "^.*". Then we get channel+prop=, while checking for spaces on
+		// either side of the = just in case. Then we get every character that
+		// isn't a semicolon; this is the value of the cookie. After that we 
+		// match either a ; followed by more cookies (.*) or the end of the 
+		// string "$"
 		return new RegExp("^.*"+channel+prop+"\s*=\s*([^;]*)(;.*$|$)", "i");
 	}
 	var width = cookieValue.replace(matchCookie("width"), "$1");
@@ -105,8 +145,11 @@ function setFromCookie(channel){
 		$("#chat-div").css("opacity", opacity);
 }
 
+// Update the channel info modal
 function updateInfo(){
+	// Get info about the stream
 	$.get("https://api.twitch.tv/kraken/streams/"+global_channel, function( data ){
+		// If the stream is offline, data.stream will be null
 		if(data.stream){
 			$("#viewers > span").html(data.stream.viewers);
 		}
@@ -114,6 +157,7 @@ function updateInfo(){
 			$("#viewers > span").html("<strong>OFFLINE</strong>");
 		}
 	});
+	// Even if a stream is offline, this info is still available
 	$.get("https://api.twitch.tv/kraken/channels/"+global_channel, function( data ){
 		$("img.logo").attr("src", data.logo);
 		$("#info-title > span").html(global_channel);
@@ -121,43 +165,53 @@ function updateInfo(){
 		$("#total-views > span").html(data.views);
 		$("#followers > span").html(data.followers);
 	});
+	// Link to the stream on twitch
 	$("#info-modal-body > a").attr("href", "http://www.twitch.tv/"+global_channel);
 }
 
-$("#add-new button").click(function(){
-	var channel = $($("#add-new input")[0]).val();
-	channels.push(channel);
-	document.cookie = "channels=" + channels.join("-");
-	addChannel(channel);
-});
-
+// Add a channel to the channel list
 function addChannel(channel){
+	// Get info about the stream
 	$.get("https://api.twitch.tv/kraken/streams/"+channel, function( data ){
+		// Make a channel thumbnail
 		var makeThumb = function(image, caption){
-			console.log(caption);
+			// Make it the first one in the list after the new button
 			$("#add-new").after(
+				// Outer div
 				$('<div>')
-				.attr("class","panel panel-default channel-thumb actual-channel-thumb")
-				.attr("data-channel", channel)
-				.css("cursor","pointer")
-				.append(
-					$("<div>").attr("class", "panel-body")
-					.html("<img class='img-thumbnail' src='"+image+"'>")
-				).append(
-					$("<div>")
-						.attr("class", "panel-footer")
-						.html("<h4 title='"+caption+"'>"+caption+ "</h4>")
-				).click(function(){
-					var channel = $(this).attr("data-channel");
-					channel = channel.toLowerCase();
-					$(".channel-name").html(channel);
-					$("#stream").attr("src", "http://www.twitch.tv/"+channel+"/embed");
-					$("#chat").attr("src", "http://www.twitch.tv/"+channel+"/chat");
-					global_channel = channel;
+					// Some css class stuff
+					.attr("class","panel panel-default channel-thumb actual-channel-thumb")
+					// Info about the channel as an attribute
+					.attr("data-channel", channel)
+					// It's a button, so let the user know it
+					.css("cursor","pointer")
+					// Inside we need body/preview
+					.append(
+						$("<div>")
+							.attr("class", "panel-body")
+							.html("<img class='img-thumbnail' src='"+image+"'>")
+					// We also need a footer/channel title
+					).append(
+						$("<div>")
+							.attr("class", "panel-footer")
+							.html("<h4 title='"+caption+"'>"+caption+ "</h4>")
+					// Load this channel
+					).click(function(){
+						var channel = $(this).attr("data-channel");
+						channel = channel.toLowerCase();
+						// Set the channel name in all things that have this class
+						$(".channel-name").html(channel);
+						// set both iframes
+						$("#stream").attr("src", "http://www.twitch.tv/"+channel+"/embed");
+						$("#chat").attr("src", "http://www.twitch.tv/"+channel+"/chat");
+						// Set the global channel variable
+						global_channel = channel;
 
-					setFromCookie(channel);
-					$("#channels").modal('hide');
-				})
+						// Set the channel dimensions for this channel
+						setFromCookie(channel);
+						// Dismiss the modal
+						$("#channels").modal('hide');
+					})
 			);
 		}
 		if(data.stream){
@@ -171,13 +225,19 @@ function addChannel(channel){
 	});
 }
 function resetChannels(){
+	// Remove all the channel thumbnails, because they're probably all wrong
 	$(".actual-channel-thumb").remove();
 	var cookieValue = document.cookie;
+	// The channel cookie is of the form channels=channel1-channel2-channel3; 
+	// The comment about the other regex above gives some info about this
 	var channelString = cookieValue.replace(/^.*channels\s*=\s*([^;]*)(;.*$|$)/,"$1");
+	// If we have a channel cookie set,
 	if(channelString !== cookieValue){
+		// This gives us an array of channels from the cookie
 		channels = channelString.split("-");
-	}
-	for(var i in channels){
-		addChannel(channels[i]);
+		// Call our helper function for each one
+		for(var i in channels){
+			addChannel(channels[i]);
+		}
 	}
 }
