@@ -28,6 +28,11 @@ $("#chat-div").resizable({
 		changeChatValue("left", ui.position.left + "px");
 	}
 });
+$('#opacity').slider({
+	formatter: function(value) {
+		return 'Opacity: ' + parseInt(value*100) + "%";
+	}
+});
 
 /*************************events*****************************/
 
@@ -48,6 +53,10 @@ $("#chat-options input").keyup(function(){
 	changeChatValue($(this).attr("id"), $(this).val());
 });
 
+$('#opacity').slider()
+	.on('slide', function(){
+		changeChatValue("opacity", $("#opacity").slider("getValue"));
+	});
 
 // Big blue button in the options menu
 $("#click-block-toggle").click(function(){
@@ -87,9 +96,11 @@ $("#minimize").click(function(){
 // Add a new channel
 $("#add-new button").click(function(){
 	var channel = $($("#add-new input")[0]).val();
-	channels.push(channel);
-	document.cookie = "channels=" + channels.join("-");
-	addChannel(channel);
+	if(channel){
+		channels.push(channel);
+		document.cookie = "channels=" + channels.join("-");
+		addChannel(channel);
+	}
 });
 
 /*************************functions*****************************/
@@ -171,58 +182,60 @@ function updateInfo(){
 
 // Add a channel to the channel list
 function addChannel(channel){
-	// Get info about the stream
-	$.get("https://api.twitch.tv/kraken/streams/"+channel, function( data ){
-		// Make a channel thumbnail
-		var makeThumb = function(image, caption){
-			// Make it the first one in the list after the new button
-			$("#add-new").after(
-				// Outer div
-				$('<div>')
-					// Some css class stuff
-					.attr("class","panel panel-default channel-thumb actual-channel-thumb")
-					// Info about the channel as an attribute
-					.attr("data-channel", channel)
-					// It's a button, so let the user know it
-					.css("cursor","pointer")
-					// Inside we need body/preview
-					.append(
-						$("<div>")
-							.attr("class", "panel-body")
-							.html("<img class='img-thumbnail' src='"+image+"'>")
-					// We also need a footer/channel title
-					).append(
-						$("<div>")
-							.attr("class", "panel-footer")
-							.html("<h4 title='"+caption+"'>"+caption+ "</h4>")
-					// Load this channel
-					).click(function(){
-						var channel = $(this).attr("data-channel");
-						channel = channel.toLowerCase();
-						// Set the channel name in all things that have this class
-						$(".channel-name").html(channel);
-						// set both iframes
-						$("#stream").attr("src", "http://www.twitch.tv/"+channel+"/embed");
-						$("#chat").attr("src", "http://www.twitch.tv/"+channel+"/chat");
-						// Set the global channel variable
-						global_channel = channel;
+	if(channel){
+		// Get info about the stream
+		$.get("https://api.twitch.tv/kraken/streams/"+channel, function( data ){
+			// Make a channel thumbnail
+			var makeThumb = function(image, caption){
+				// Make it the first one in the list after the new button
+				$("#add-new").after(
+					// Outer div
+					$('<div>')
+						// Some css class stuff
+						.attr("class","panel panel-default channel-thumb actual-channel-thumb")
+						// Info about the channel as an attribute
+						.attr("data-channel", channel)
+						// It's a button, so let the user know it
+						.css("cursor","pointer")
+						// Inside we need body/preview
+						.append(
+							$("<div>")
+								.attr("class", "panel-body")
+								.html("<img class='img-thumbnail' src='"+image+"'>")
+						// We also need a footer/channel title
+						).append(
+							$("<div>")
+								.attr("class", "panel-footer")
+								.html("<h4 title='"+caption+"'>"+caption+ "</h4>")
+						// Load this channel
+						).click(function(){
+							var channel = $(this).attr("data-channel");
+							channel = channel.toLowerCase();
+							// Set the channel name in all things that have this class
+							$(".channel-name").html(channel);
+							// set both iframes
+							$("#stream").attr("src", "http://www.twitch.tv/"+channel+"/embed");
+							$("#chat").attr("src", "http://www.twitch.tv/"+channel+"/chat");
+							// Set the global channel variable
+							global_channel = channel;
 
-						// Set the channel dimensions for this channel
-						setFromCookie(channel);
-						// Dismiss the modal
-						$("#channels").modal('hide');
-					})
-			);
-		}
-		if(data.stream){
-			makeThumb(data.stream.preview.medium, channel + " playing " + data.stream.game);
-		}
-		else{
-			$.get("https://api.twitch.tv/kraken/channels/"+channel, function( data ){
-				makeThumb(data.logo, caption = channel + " (OFFLINE)")
-			});
-		}
-	});
+							// Set the channel dimensions for this channel
+							setFromCookie(channel);
+							// Dismiss the modal
+							$("#channels").modal('hide');
+						})
+				);
+			}
+			if(data.stream){
+				makeThumb(data.stream.preview.medium, channel + " playing " + data.stream.game);
+			}
+			else{
+				$.get("https://api.twitch.tv/kraken/channels/"+channel, function( data ){
+					makeThumb(data.logo, caption = channel + " (OFFLINE)")
+				});
+			}
+		});
+	}
 }
 function resetChannels(){
 	// Remove all the channel thumbnails, because they're probably all wrong

@@ -5,9 +5,11 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-slider.css">
     <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-slider.js"></script>
 </head>
 <body>
 <!-- With the twitch embed code, when you click anywhere on the video outside 
@@ -28,7 +30,7 @@
                             left:0px;
                             height:80%;
                             width:400px;
-                            opacity:0.9;">
+                            opacity:0.7;">
     <!-- This is where the twitch chat lives. It has no source because it's
          set when the user selects a channel -->
     <iframe frameborder="0" scrolling="no" id="chat"></iframe>
@@ -161,10 +163,13 @@
                             id="left" 
                             value="0px">
                     <label for="opacity">opacity</label>
-                    <input  type="text" 
-                            class="form-control" 
-                            id="opacity" 
-                            value="0.9">
+                    <input  id="opacity" 
+                            data-slider-id='opacitySlider'
+                            type="text"
+                            data-slider-min="0"
+                            data-slider-max="1" 
+                            data-slider-step="0.01"
+                            data-slider-value="0.7"/>
                 </form>
             </div>
             <div class="modal-footer">
