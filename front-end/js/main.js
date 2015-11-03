@@ -10,6 +10,9 @@ resetChannels();
 // We need to select a channel first-thing, so show this modal
 $("#channels").modal('show');
 
+// we only need this when we're resizing
+$(".resize-helper").hide();
+
 // Set up the JQuery UI resizable and draggable stuff
 $("#chat-div").resizable({
 	// You can resize it from any side/corner
@@ -21,12 +24,24 @@ $("#chat-div").resizable({
 		// Resizing can affect these values too
 		changeChatValue("top", ui.position.top + "px");
 		changeChatValue("left", ui.position.left + "px");
+	},
+	start: function(event, ui){
+		$(".resize-helper").show();
+	},
+	stop: function(event, ui){
+		$(".resize-helper").hide();
 	}
 }).draggable({
 	drag: function(event, ui){
 		changeChatValue("top", ui.position.top + "px");
 		changeChatValue("left", ui.position.left + "px");
 	}
+// Let's throw in a "make it completely opaque when hovered on" action
+}).hover(function(){
+	$("#chat-div").attr("data-opacity", $("#chat-div").css("opacity"));
+	changeChatValue("opacity", 1);
+},function(){
+	changeChatValue("opacity", 	$("#chat-div").attr("data-opacity"));
 });
 $('#opacity').slider({
 	formatter: function(value) {

@@ -73,6 +73,11 @@
             </div>
         </nav>
     </div>
+    <!-- There are some problems with the iframe and the resize event where, if 
+         you go to fast, you enter the iframe so the resize cursor tracking
+         can't do it's thing. So this is going to cover the whole div when
+         we're resizing-->
+    <div class="resize-helper"></div>
 </div>
 
 <!-- Stream Menu modal -->
