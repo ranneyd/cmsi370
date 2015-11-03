@@ -43,11 +43,13 @@ $("#chat-div").resizable({
 },function(){
 	changeChatValue("opacity", 	$("#chat-div").attr("data-opacity"));
 });
+
 $('#opacity').slider({
 	formatter: function(value) {
 		return 'Opacity: ' + parseInt(value*100) + "%";
 	}
 });
+
 
 /*************************events*****************************/
 
@@ -109,12 +111,25 @@ $("#minimize").click(function(){
 	}
 });
 // Add a new channel
-$("#add-new button").click(function(){
+// PRO HACKS: We don't have to bind a click event to the add button!
+// If you type in the name and hit the button, hitting the button
+// de-focuses the input which triggers a change event in it. So that's
+// the same as hitting enter. The change on the input, thus, also covers
+// the press! ZOMG
+$("#add-new input").change(function(){
 	var channel = $($("#add-new input")[0]).val();
-	if(channel){
-		channels.push(channel);
-		document.cookie = "channels=" + channels.join("-");
-		addChannel(channel);
+	$($("#add-new input")[0]).val("");
+	if(channel && channels.indexOf(channel) == -1){
+		// We don't want to add it if the channel doesn't exist
+		$.ajax({
+			url: "https://api.twitch.tv/kraken/channels/"+channel,
+			type:"get",
+			success: function(data){
+				channels.push(channel);
+				document.cookie = "channels=" + channels.join("-");
+				addChannel(channel);
+			}
+		});
 	}
 });
 
