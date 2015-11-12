@@ -34,6 +34,10 @@ var BoxesTouch = {
                     left: touch.pageX - touch.target.deltaX,
                     top: touch.pageY - touch.target.deltaY
                 });
+                touch.target.prevX = touch.target.currentX;
+            	touch.target.prevY = touch.target.currentY;
+            	touch.target.currentX = touch.target.movingBox.offset().left;
+            	touch.target.currentY = touch.target.movingBox.offset().top;
             }
         });
         
@@ -47,7 +51,8 @@ var BoxesTouch = {
     endDrag: function (event) {
         $.each(event.changedTouches, function (index, touch) {
             if (touch.target.movingBox) {
-            	touch.target.movingBox.offset.left;
+            	console.log(touch.target.prevX);
+            	console.log(touch.target.currentX);
                 // Change state to "not-moving-anything" by clearing out
                 // touch.target.movingBox.
                 touch.target.movingBox = null;
@@ -77,8 +82,15 @@ var BoxesTouch = {
             // Set the drawing area's state to indicate that it is
             // in the middle of a move.
             touch.target.movingBox = jThis;
+            
+
             touch.target.deltaX = touch.pageX - startOffset.left;
             touch.target.deltaY = touch.pageY - startOffset.top;
+
+            touch.target.prevX = touch.target.movingBox.offset().left;
+        	touch.target.prevY = touch.target.movingBox.offset().top;
+        	touch.target.currentX = touch.target.movingBox.offset().left;
+        	touch.target.currentY = touch.target.movingBox.offset().top;
         });
 
         // Eat up the event so that the drawing area does not
