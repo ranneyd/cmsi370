@@ -1,3 +1,5 @@
+
+
 var BoxesTouch = {
     /**
      * Sets up the given jQuery collection as the drawing area(s).
@@ -45,6 +47,7 @@ var BoxesTouch = {
     endDrag: function (event) {
         $.each(event.changedTouches, function (index, touch) {
             if (touch.target.movingBox) {
+            	touch.target.movingBox.offset.left;
                 // Change state to "not-moving-anything" by clearing out
                 // touch.target.movingBox.
                 touch.target.movingBox = null;
