@@ -34,8 +34,10 @@ var BoxesTouch = {
                     left: touch.pageX - touch.target.deltaX,
                     top: touch.pageY - touch.target.deltaY
                 });
+                // The current ones from last time are now the previous ones
                 touch.target.prevX = touch.target.currentX;
             	touch.target.prevY = touch.target.currentY;
+            	// The current ones now are what the position actually is.
             	touch.target.currentX = touch.target.movingBox.offset().left;
             	touch.target.currentY = touch.target.movingBox.offset().top;
             }
@@ -87,10 +89,14 @@ var BoxesTouch = {
             touch.target.deltaX = touch.pageX - startOffset.left;
             touch.target.deltaY = touch.pageY - startOffset.top;
 
-            touch.target.prevX = touch.target.movingBox.offset().left;
-        	touch.target.prevY = touch.target.movingBox.offset().top;
-        	touch.target.currentX = touch.target.movingBox.offset().left;
-        	touch.target.currentY = touch.target.movingBox.offset().top;
+
+            // These will represent coordinates at the previous step
+            // versus the coordinates now. They will be used for
+            // computing velocity.
+            touch.target.prevX = startOffset.left;
+        	touch.target.prevY = startOffset.top;
+        	touch.target.currentX = startOffset.left;
+        	touch.target.currentY = startOffset.top;
         });
 
         // Eat up the event so that the drawing area does not
