@@ -1,12 +1,11 @@
 // Period, in millis, between two animations post-flick
-var TIME_STEP = 1;
 // Coefficient of friction we'll use to slow down sliding
-var FRICTION_COEF = .98;
+var FRICTION_COEF = .97;
 
 // Random boxes will have dimensions between MINIMUM_BOX_SIZE
 // and MAXIMUM_BOX_SIZE
 var MAXIMUM_BOX_SIZE = 100;
-var MINIMUM_BOX_SIZE = 20;
+var MINIMUM_BOX_SIZE = 50;
 
 var BoxesTouch = {
     /**
@@ -18,11 +17,12 @@ var BoxesTouch = {
 			var randomWidth = Math.round(Math.random()*(MAXIMUM_BOX_SIZE - MINIMUM_BOX_SIZE)) + MINIMUM_BOX_SIZE;
 			box.append(
 				$("<div>").css({
-					"height" : Math.round(Math.random()*100),
-					"width" : Math.round(Math.random()*100),
+					"height" : randomHeight,
+					"width" : randomWidth,
 					"top": Math.round(Math.random()*(box.height()-randomHeight)),
 					"left": Math.round(Math.random()*(box.width()-randomWidth)),
 				})
+				.addClass("box")
 			);
     	}
 
@@ -173,9 +173,9 @@ var BoxesTouch = {
     			"top": newPosY,
     		});
 
-    		setTimeout(function(){
+    		window.requestAnimationFrame(function(){
     			BoxesTouch.slide(box, newDeltaX, newDeltaY);
-    		}, TIME_STEP);
+    		});
     	}
     },
     /**
