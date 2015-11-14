@@ -1,4 +1,7 @@
-
+// Period, in millis, between two animations post-flick
+var TIME_STEP = 100;
+// Coefficient of friction we'll use to slow down sliding
+var FRICTION_COEF = 0.3;
 
 var BoxesTouch = {
     /**
@@ -53,10 +56,11 @@ var BoxesTouch = {
     endDrag: function (event) {
         $.each(event.changedTouches, function (index, touch) {
             if (touch.target.movingBox) {
-            	console.log(touch.target.prevX);
-            	console.log(touch.target.currentX);
-                // Change state to "not-moving-anything" by clearing out
-                // touch.target.movingBox.
+            	var deltaX = touch.target.currentX - touch.target.prevX;
+            	var deltaY = touch.target.currentY - touch.target.prevY;
+
+            	BoxesTouch.slide($(touch.target), deltaX, deltaY);
+
                 touch.target.movingBox = null;
             }
         });
@@ -102,6 +106,26 @@ var BoxesTouch = {
         // Eat up the event so that the drawing area does not
         // deal with it.
         event.stopPropagation();
+    }
+
+	/**
+     * Recursively animate the box moving on its own post-flick
+     */
+    slide: function(box, deltaX, deltaY) {
+    	// This will only trigger if either of them is non-zero
+    	if(deltaX || deltaY){
+    		var pos = box.position();
+    		var newDeltaX = deltaX*FRICTION_COEF;
+    		var newDeltaY = deltaY*FRICTION_COEF;
+    		box.css({
+    			"left": pos.left + newDeltaX,
+    			"top": pos.top + newDeltaY,
+    		});
+
+    		setTimeout(function(){
+    			BoxesTouch.slide(box, newDeltaX, newDeltaY);
+    		}, TIME_STEP);
+    	}
     }
 
 };
