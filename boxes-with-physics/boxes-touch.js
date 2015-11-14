@@ -3,13 +3,31 @@ var TIME_STEP = 1;
 // Coefficient of friction we'll use to slow down sliding
 var FRICTION_COEF = .98;
 
+// Random boxes will have dimensions between MINIMUM_BOX_SIZE
+// and MAXIMUM_BOX_SIZE
+var MAXIMUM_BOX_SIZE = 100;
+var MINIMUM_BOX_SIZE = 20;
+
 var BoxesTouch = {
     /**
      * Sets up the given jQuery collection as the drawing area(s).
      */
-    setDrawingArea: function (jQueryElements) {
+    setDrawingArea: function (box) {
+    	for(var i = 0; i < 3; ++i){
+			var randomHeight = Math.round(Math.random()*(MAXIMUM_BOX_SIZE - MINIMUM_BOX_SIZE)) + MINIMUM_BOX_SIZE;
+			var randomWidth = Math.round(Math.random()*(MAXIMUM_BOX_SIZE - MINIMUM_BOX_SIZE)) + MINIMUM_BOX_SIZE;
+			box.append(
+				$("<div>").css({
+					"height" : Math.round(Math.random()*100),
+					"width" : Math.round(Math.random()*100),
+					"top": Math.round(Math.random()*(box.height()-randomHeight)),
+					"left": Math.round(Math.random()*(box.width()-randomWidth)),
+				})
+			);
+    	}
+
         // Set up any pre-existing box elements for touch behavior.
-        jQueryElements
+        box
             .addClass("drawing-area")
             
             // Event handler setup must be low-level because jQuery
