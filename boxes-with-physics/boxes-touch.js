@@ -1,7 +1,7 @@
 // Period, in millis, between two animations post-flick
-var TIME_STEP = 100;
+var TIME_STEP = 1;
 // Coefficient of friction we'll use to slow down sliding
-var FRICTION_COEF = 0.3;
+var FRICTION_COEF = .98;
 
 var BoxesTouch = {
     /**
@@ -32,11 +32,26 @@ var BoxesTouch = {
         $.each(event.changedTouches, function (index, touch) {
             // Don't bother if we aren't tracking anything.
             if (touch.target.movingBox) {
-                // Reposition the object.
-                touch.target.movingBox.offset({
-                    left: touch.pageX - touch.target.deltaX,
-                    top: touch.pageY - touch.target.deltaY
-                });
+
+
+            	var newX = touch.pageX - touch.target.deltaX;
+            	var newY = touch.pageY - touch.target.deltaY;
+
+            	// If they are moving it within the bounds of the parent
+            	if(BoxesTouch.checkBounds($(touch.target), newX, newY)){
+            		// Reposition the object.
+	                touch.target.movingBox.offset({
+	                    left: touch.pageX - touch.target.deltaX,
+	                    top: touch.pageY - touch.target.deltaY
+	                });
+            	}
+            	else{
+            		// Presumably, the finger has moved, but the box has not,
+            		// so we need new deltaX and deltaYs.
+            		touch.target.deltaX = touch.pageX - touch.target.movingBox.offset().left;
+            		touch.target.deltaY = touch.pageY - touch.target.movingBox.offset().top;
+            	}
+
                 // The current ones from last time are now the previous ones
                 touch.target.prevX = touch.target.currentX;
             	touch.target.prevY = touch.target.currentY;
@@ -106,26 +121,57 @@ var BoxesTouch = {
         // Eat up the event so that the drawing area does not
         // deal with it.
         event.stopPropagation();
-    }
+    },
 
 	/**
      * Recursively animate the box moving on its own post-flick
      */
     slide: function(box, deltaX, deltaY) {
-    	// This will only trigger if either of them is non-zero
-    	if(deltaX || deltaY){
+    	// This will only trigger if either of them is less than one pixel
+    	if(Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1 ){
     		var pos = box.position();
     		var newDeltaX = deltaX*FRICTION_COEF;
     		var newDeltaY = deltaY*FRICTION_COEF;
+
+    		var newPosX = pos.left + newDeltaX;
+    		var newPosY = pos.top + newDeltaY;
+    		// If it's going to move outside the container
+    		if(!BoxesTouch.checkBounds(box, newPosX, newPosY)){
+    			console.log("WALL");
+    			// assume perfectly elastic walls
+    			if(newPosX <= 0 || newPosX + box.width() > box.parent().width()){
+    				newDeltaX = -newDeltaX;
+    				newPosX = pos.left + newDeltaX;
+    			}
+    			// If it's out of bounds, and it isn't out of bounds for x, it is
+    			// for y
+    			else{
+    				newDeltaY = -newDeltaY;
+    				newPosY = pos.top + newDeltaY;
+    			}
+    		}
     		box.css({
-    			"left": pos.left + newDeltaX,
-    			"top": pos.top + newDeltaY,
+    			"left": newPosX,
+    			"top": newPosY,
     		});
 
     		setTimeout(function(){
     			BoxesTouch.slide(box, newDeltaX, newDeltaY);
     		}, TIME_STEP);
     	}
+    },
+    /**
+     * Returns true if the box is entirely inside the parent container
+     */
+    checkBounds: function(box, newX, newY){
+    	// We benefit from the boxes being positioned relative to the parent.
+    	// 0 is the top/left and height/width is the position of the top/right
+    	return newX > 0 			// left side. 
+			&& newY > 0 			// top
+			&& newX + box.width() 
+					< box.parent().width() 		// right side.
+			&& newY + box.height() 
+					< box.parent().height(); 	// bottom.
     }
 
 };
