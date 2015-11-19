@@ -1,5 +1,7 @@
 /*************************Setup*****************************/
 
+// JD: 12
+
 // this is the current channel we're watching
 var global_channel;
 // This is the list of channels to pick from
@@ -15,9 +17,9 @@ $(".resize-helper").hide();
 
 // Set up the JQuery UI resizable and draggable stuff
 $("#chat-div").resizable({
-	// You can resize it from any side/corner
+	// You can resize it from any side/corner // JD: 1
 	handles: 'n, e, s, w, ne, nw, se, sw',
-	resize: function(event, ui){
+	resize: function(event, ui){ // JD: 14, 15
 		changeChatValue("width", ui.size.width + "px");
 		changeChatValue("height", ui.size.height + "px");
 
@@ -25,28 +27,28 @@ $("#chat-div").resizable({
 		changeChatValue("top", ui.position.top + "px");
 		changeChatValue("left", ui.position.left + "px");
 	},
-	start: function(event, ui){
+	start: function(event, ui){ // JD: 14, 15
 		$(".resize-helper").show();
 	},
-	stop: function(event, ui){
+	stop: function(event, ui){ // JD: 14, 15
 		$(".resize-helper").hide();
 	}
 }).draggable({
-	drag: function(event, ui){
+	drag: function(event, ui){ // JD: 14, 15
 		changeChatValue("top", ui.position.top + "px");
 		changeChatValue("left", ui.position.left + "px");
 	}
 // Let's throw in a "make it completely opaque when hovered on" action
-}).hover(function(){
+}).hover(function(){ // JD: 14, 15
 	$("#chat-div").attr("data-opacity", $("#chat-div").css("opacity"));
 	changeChatValue("opacity", 1);
-},function(){
+},function(){ // JD: 14, 15
 	changeChatValue("opacity", 	$("#chat-div").attr("data-opacity"));
 });
 
 $('#opacity').slider({
-	formatter: function(value) {
-		return 'Opacity: ' + parseInt(value*100) + "%";
+	formatter: function(value) { // JD: 14, 15 .....you get the point :)
+		return 'Opacity: ' + parseInt(value*100) + "%"; // JD: 9
 	}
 });
 
@@ -78,13 +80,13 @@ $('#opacity').slider()
 // Big blue button in the options menu
 $("#click-block-toggle").click(function(){
 	// Turn off blocker
-	if($(this).hasClass("btn-primary")){
+	if($(this).hasClass("btn-primary")){ // JD: 15, 16
 		$(this).removeClass("btn-primary")
 			.addClass("btn-default")
 			.html("Block me from accidentally clicking on the stream");
 		$(".block-click").hide();
 	}
-	else{
+	else{ // JD: 17
 		$(this).removeClass("btn-default")
 			.addClass("btn-primary")
 			.html("Let me click inside the stream");
@@ -95,7 +97,7 @@ $("#click-block-toggle").click(function(){
 $("#minimize").click(function(){
 	var icon = $($(this).find("span")[0]);
 	// Roll up
-	if(icon.hasClass("glyphicon-minus")){
+	if(icon.hasClass("glyphicon-minus")){ // JD: 15, 16
 		// Save as an html attribute the height we're returning to
 		$(this).attr("data-og-height", $("#chat-div").css("height"));
 		// We don't want it resizable when it's minimized
@@ -104,7 +106,7 @@ $("#minimize").click(function(){
 		$("#chat-div").animate({"height":"50px"});
 		icon.removeClass("glyphicon-minus").addClass("glyphicon-plus");
 	}
-	else{
+	else{ // JD: 17
 		$("#chat-div").resizable("enable");
 		$("#chat-div").animate({"height":$(this).attr("data-og-height")});
 		icon.removeClass("glyphicon-plus").addClass("glyphicon-minus");
@@ -119,11 +121,11 @@ $("#minimize").click(function(){
 $("#add-new input").change(function(){
 	var channel = $($("#add-new input")[0]).val();
 	$($("#add-new input")[0]).val("");
-	if(channel && channels.indexOf(channel) == -1){
+	if(channel && channels.indexOf(channel) == -1){ // JD: 15, 16, 18
 		// We don't want to add it if the channel doesn't exist
 		$.ajax({
-			url: "https://api.twitch.tv/kraken/channels/"+channel,
-			type:"get",
+			url: "https://api.twitch.tv/kraken/channels/"+channel, // JD: 9
+			type:"get", // JD: 9
 			success: function(data){
 				channels.push(channel);
 				document.cookie = "channels=" + channels.join("-");
@@ -135,8 +137,11 @@ $("#add-new input").change(function(){
 
 /*************************functions*****************************/
 
+// JD: 19
+
 // Change style "type" to val of the chat window
 function changeChatValue(type, val){
+    // JD: 20
 	switch(type){
 		case "width":
 			$("#chat-div").css("width", val);
@@ -154,7 +159,7 @@ function changeChatValue(type, val){
 			$("#chat-div").css("opacity", val);
 			break;
 	}
-	document.cookie = global_channel+type+"="+val;
+	document.cookie = global_channel+type+"="+val; // JD: 9
 }
 // Set chat window styles from cookies for "channel"
 function setFromCookie(channel){
@@ -174,6 +179,8 @@ function setFromCookie(channel){
 	var top = cookieValue.replace(matchCookie("top"), "$1");
 	var left = cookieValue.replace(matchCookie("left"), "$1");
 	var opacity = cookieValue.replace(matchCookie("opacity"), "$1");
+
+    // JD: 21
 	if(width)
 		$("#chat-div").css("width", width);
 	if(height)
@@ -194,7 +201,7 @@ function updateInfo(){
 		if(data.stream){
 			$("#viewers > span").html(data.stream.viewers);
 		}
-		else{
+		else{ // JD: 17
 			$("#viewers > span").html("<strong>OFFLINE</strong>");
 		}
 	});
@@ -259,9 +266,9 @@ function addChannel(channel){
 			if(data.stream){
 				makeThumb(data.stream.preview.medium, channel + " playing " + data.stream.game);
 			}
-			else{
+			else{ // JD: 17
 				$.get("https://api.twitch.tv/kraken/channels/"+channel, function( data ){
-					makeThumb(data.logo, caption = channel + " (OFFLINE)")
+					makeThumb(data.logo, caption = channel + " (OFFLINE)") // JD: 22
 				});
 			}
 		});
@@ -279,7 +286,7 @@ function resetChannels(){
 		// This gives us an array of channels from the cookie
 		channels = channelString.split("-");
 		// Call our helper function for each one
-		for(var i in channels){
+		for(var i in channels){ // JD: 23
 			addChannel(channels[i]);
 		}
 	}

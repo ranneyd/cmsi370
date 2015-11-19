@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Kappa View</title>
+<head> <!-- JD: 2 -->
+    <title>Kappa View</title> <!-- JD: 1 -->
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap-slider.css">
-    <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script> <!-- JD: 3 -->
     <script type="text/javascript" src="js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/bootstrap-slider.js"></script>
@@ -17,7 +17,7 @@
      to have a div overlay it that blocks clicking. We make it the size of the
      window but shift it up by the size of the control bar, which I found was
      about 28 pixels -->
-<div class="block-click">
+<div class="block-click"> <!-- JD: 4 -->
 </div>
 <!-- Just like above, the source of this iframe is set when the user selects
      a channel to view. -->
@@ -25,7 +25,7 @@
 <!-- I know what you're thinking, and inline styles would scare me too. But the
      chat window moves via JQuery UI's draggable and resizable, and those
      manipulate the element with inline styles anyway. So these are just the 
-     default values. -->
+     default values. --> <!-- JD: 5 -->
 <div id="chat-div" style="  top:10%;
                             left:0px;
                             height:80%;
@@ -63,7 +63,7 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li style="float:right">
+                    <li style="float:right"> <!-- JD: 6 -->
                         <a id="minimize">
                             <span   class="glyphicon glyphicon-minus"
                                     aria-hidden="true"></span>
@@ -76,7 +76,7 @@
     <!-- There are some problems with the iframe and the resize event where, if 
          you go to fast, you enter the iframe so the resize cursor tracking
          can't do it's thing. So this is going to cover the whole div when
-         we're resizing-->
+         we're resizing--> <!-- JD: 7 -->
     <div class="resize-helper"></div>
 </div>
 
@@ -107,6 +107,7 @@
                 <p id="followers">Followers: <span></span></p>
                 <a>Go to stream on twitch.tv</a>
 
+                <!-- JD: 8 -->
                 <h2>About <img src="//static-cdn.jtvnw.net/emoticons/v1/25/1.0" title="Kappa" alt="Kappa" class="emote"> (Kappa) View</h2>
                 <div class="alert alert-success" role="alert"><strong>Protip:</strong> move and resize the chat window to your liking. Then go to the settings and change the opacity to a value between 0 and 1 to represent how see-through you want the chat to be. These settings are channel-specific and will be preserved when you close the app or switch to a different channel.</div>
                 <div class="alert alert-success" role="alert"><strong>Protip:</strong> When you click anywhere in the stream other than the controls at the bottom, the video takes you back to twitch.tv. We block you from clicking accidentally and provide a link to the stream on twitch in this menu (up where it says "Go to this stream on twitch.tv"). If you need to click inside the stream for some reason (for instance, if you're changing the stream quality and need to press an option in the menu) you can temporarily turn off the click blocker by hitting that big blue button in the options menu (the gear symbol) that says "Let me click inside the stream".</div>
@@ -137,6 +138,7 @@
                 <h4 class="modal-title">Options</h4>
             </div>
             <div class="modal-body" id="options-modal-body">
+                <!-- JD: 8 -->
                 <div class="alert alert-success" role="alert"><img src="//static-cdn.jtvnw.net/emoticons/v1/25/1.0" title="Kappa" alt="Kappa" class="emote"> View looks best when Twitch chat is set to "dark mode". Turn it on in the chat settings.</div>
                 <!-- Toggles the click blocker overlaying the stream. -->
                 <button type="button"

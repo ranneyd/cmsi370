@@ -1,11 +1,11 @@
-html,body{
-	width:100%;
-	height:100%;
+html,body{ /* JD: 9 */
+	width:100%; /* JD: 1 */
+	height:100%; /* JD: 10 */
 	position:relative;
 	padding:0px;
 	margin:0px;
 	overflow: hidden;
-}
+} /* JD: 11 */
 .block-click{
 	position: absolute;
 	top:-28px;
@@ -27,7 +27,7 @@ html,body{
 	padding:0px;
 	margin:0px;
 	overflow: hidden;
-	background-color: rgba(30,30,30,0.7);
+	background-color: rgba(30,30,30,0.7); /* JD: 9 */
 }
 #chat-div>div.dragger{
 	position: absolute;
