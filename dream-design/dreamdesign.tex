@@ -64,20 +64,69 @@ Similar types of interfaces already exist, and they go by the name \emph{augment
 \includegraphics[width=0.5\textwidth]{ikea}
 \caption{IKEA Catalog app [5]}
 \end{wrapfigure}
-\begin{wrapfigure}{l}{0.5\textwidth}
+
+
+Augmented reality refers to computers ``augmenting'' the real, physical world [4]. Figure 2 shows the IKEA Catalog app [5]. This app allows you to use your mobile device's camera to see what a room would look like with IKEA furniture. The app overlays the computer-generated furniture onto the image from the camera. The furniture is manipulable using the touch screen of the device. This is a favorable interface because it enhances something the user already does without a computer: visualizing how furniture will look in a room. This is something a user would, otherwise, do with their imagination. Technology comes in and creates the actual image to create a more accurate depiction of what the furniture will actually look like.
+
+\begin{wrapfigure}{r}{0.5\textwidth}
 \centering
 \includegraphics[width=0.5\textwidth]{coupons}
 \caption{This app displays coupons and alternative pricing for items at a grocery store [6]}
 \end{wrapfigure}
-Augmented reality refers to computers ``augmenting'' the real, physical world [4]. Figure 2 shows the IKEA Catalog app [5]. This app allows you to use your mobile device's camera to see what a room would look like with IKEA furniture. The app overlays the computer-generated furniture onto the image from the camera. The furniture is manipulable using the touch screen of the device. This illustrates the idea of combining computer elements and images from the real world.
 
-Figure 3 provides another example. This app shows the user coupons and alternate prices for items at a grocery store.
+Figure 3 provides another example. This app shows the user coupons and alternate prices for items at a grocery store. The user points their phone's camera at items at the store and the app overlays prices and coupons next to the items in the image. This is a better interface than searching for prices online because it enhances the user's knowledge of prices. Instead of asking a third party, the user is presented the information next to the items in their view. The user behaves as if they knew the prices already, but they are actually being supplied with the beneficial information by the computer.
+
+
+
+Matthew Buckland wrote an interesting essay on the potential applications of augmented reality to social networking [7]. Illustrated in Figure 4, Buckland imagines an interface where the user can hold up their phone's camera to a row of houses and get various data from social media. The data may include information about an upcoming block party, or a location on a map. It could also have tags next to each house representing profiles of each resident with quick buttons to get in contact with each of these people. Here, the computer is enhancing the user's ability to recognize houses and the people who live in them. It's also incredibly efficient because it includes interactive buttons for things like messaging right next to the houses in the image. This example is the most similar to the interface I'm proposing.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{social}
+\caption{A concept design of an augmented reality app centered around social media [7]}
+\end{figure}
+
+There is a problem with each of these examples, however. In Figures 2-4, there is a visible device. For this interface to reach its full potential, there cannot be a visible device. First, the edges of the device obstruct the user's view; in Figure 3 we cannot see what items are behind the black bars of the iPhone. Second, the entire field of view is not augmented by the interface; users have to look at the world through their device, either holding it uncomfortably close to their face or getting a very small porthole to see the augmented world. Finally, the user's hands aren't free. The user must hold the device up, making them unable to use their hands in ways they normally would. This interface would be impossible to use for getting directions while driving, or instructions while cooking, for example. For this interface to realize its potential it must include the user's entire view, it must not obstruct any part of the user's view, and it must be hands free. 
+
+
+
+\section{The Microsoft HoloLens}
+
+\subsection{The Augmented Reality Device}
+
+In January 2015, Microsoft unveiled the HoloLens, a device designed for augmented reality [9]. The HoloLens is a headset that displays images on a transparent screen right in front of the user's eyes. Unlike many \emph{virtual reality} headsets released prior to it that create an \emph{entirely} virtual world, the HoloLens is transparent and lays computer-generated images over the user's view of the real world. As Microsoft puts it on their website: 
+
+\begin{quote}
+``Microsoft HoloLens generates a multi-dimensional image visible to a user so that he or she perceives holographic objects in the physical world. Holographic objects seen with Microsoft HoloLens can be placed in physical locations you choose, move according to their own rules, or remain in a specific location within your field of view regardless of where you are or in which direction you are looking.'' - Microsoft [10]
+\end{quote}
+
+\subsection{What Can It Do?}
+
+The key feature of the HoloLens is that, through its sensors, and complex processor, it can react to user gestures. As Microsoft puts it: 
+
+\begin{quote} 
+    ``The holograms you'll see with Microsoft HoloLens can appear life-like, and can move, be shaped, and change according to interaction with you or the physical environment in which they are visible. Use gestures to create, shape, and size holograms. Use your gaze to navigate and explore. Use your voice to communicate with your apps. Microsoft HoloLens understands your movements, gaze, and voice, enabling you to interact with content and information naturally. Using holograms, you can place your digital content, such as apps, information, and even multi-dimensional videos, in the physical space around you, so you can interact with it.'' - Microsoft [10]
+\end{quote}
+
+The idea is the HoloLens can create virtual objects that can be manipulated by the user. It can sense the user's hands and recognize gestures to allow for things like moving and interacting with objects. It also immerses the user in computer-generated images, using their entire field of view. 
+
+It is able to do this with dedicated hardware. Microsoft says
+
+\begin{quote}
+    ``The HPU is custom silicon that processes a large amount of data per second from the sensors. Microsoft HoloLens understands gestures and where you look, and maps the world around you, all in real time.'' - Microsoft [11]
+\end{quote}
+
+Though Microsoft has only released a limited amount of detailed information about the device and how it works, based on live demos of users playing various video games and interacting with 3D models (all viewable on the HoloLens product page [12]), we can assume the device is fairly robust in its computing capabilities for things like image projection and complex gesture recognition. 
+
+\section{The Dream Design: An Interactive Heads-Up Display with Microsoft HoloLens}
+
+\subsection{Putting It All Together}
+
+
 
 \section{Sources}
 
-``The holograms you'll see with Microsoft HoloLens can appear life-like, and can move, be shaped, and change according to interaction with you or the physical environment in which they are visible. Use gestures to create, shape, and size holograms. Use your gaze to navigate and explore. Use your voice to communicate with your apps. Microsoft HoloLens understands your movements, gaze, and voice, enabling you to interact with content and information naturally. Using holograms, you can place your digital content, such as apps, information, and even multi-dimensional videos, in the physical space around you, so you can interact with it.''
 
-``The HPU is custom silicon that processes a large amount of data per second from the sensors. Microsoft HoloLens understands gestures and where you look, and maps the world around you, all in real time.''
 \begin{enumerate}
     \item https://www.brainpickings.org/2011/12/21/steve-jobs-bicycle-for-the-mind-1990/
     \item https://en.wikipedia.org/wiki/Head-up\_display
@@ -89,8 +138,14 @@ Figure 3 provides another example. This app shows the user coupons and alternate
     \item http://augmentedpixels.com/wp-content/uploads/2013/11/augmented-reality-
 
     marketing.jpg
+    \item http://matthewbuckland.com/?p=1041
+    \item http://www.matthewbuckland.com/wp-images/futureofsocialnetworking02.png
+    \item http://www.theverge.com/2015/1/21/7867593/microsoft-announces-windows-
+
+    holographic
 	\item https://www.microsoft.com/microsoft-hololens/en-us/faq
 	\item https://www.microsoft.com/microsoft-hololens/en-us/hardware
+    \item http://www.microsoft.com/microsoft-hololens/en-us
 \end{enumerate}
 
 
