@@ -1,8 +1,4 @@
 *.aux
-dream-design/dreamdesign.log
 *.gz
-dream-design/dreamdesign.pdf
-dream-design/dreamdesign.pdf
-usability-study/assignment0924.log
-*.pdf
+*.log
 dream-design/usage.psd
