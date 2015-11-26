@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Manipulate.js Demo</title>
+    </head>
+    <style type="text/css">
+        #manipulable-object {
+            border: 1px solid black;
+            width:150px;
+            height:150px;
+        }
+    </style>
+    <body>
+
+        <div draggable="true" id="manipulable-object"></div>
+
+
+
+
+        <!-- Load up jQuery first. -->
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
+        
+        <!-- Load up draggable code. -->
+        <script type="text/javascript" src="manipulate.js"></script>
+
+        <!-- Code that is totally specific to this page. -->
+        <script type="text/javascript">
+            (function(){
+                $("#manipulable-object").manipulate( function (elem, props){
+
+                });
+            })();
+        </script>
+    </body>
+</html>
