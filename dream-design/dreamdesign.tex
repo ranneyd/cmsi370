@@ -71,12 +71,10 @@ Augmented reality refers to computers ``augmenting'' the real, physical world [4
 \begin{wrapfigure}{r}{0.5\textwidth}
 \centering
 \includegraphics[width=0.5\textwidth]{coupons}
-\caption{This app displays coupons and alternative pricing for items at a grocery store [6]}
+\caption{This app displays coupons and pricing for items at a grocery store [6]}
 \end{wrapfigure}
 
 Figure 3 provides another example. This app shows the user coupons and alternate prices for items at a grocery store. The user points their phone's camera at items at the store and the app overlays prices and coupons next to the items in the image. This is a better interface than searching for prices online because it enhances the user's knowledge of prices. Instead of asking a third party, the user is presented the information next to the items in their view. The user behaves as if they knew the prices already, but they are actually being supplied with the beneficial information by the computer.
-
-
 
 Matthew Buckland wrote an interesting essay on the potential applications of augmented reality to social networking [7]. Illustrated in Figure 4, Buckland imagines an interface where the user can hold up their phone's camera to a row of houses and get various data from social media. The data may include information about an upcoming block party, or a location on a map. It could also have tags next to each house representing profiles of each resident with quick buttons to get in contact with each of these people. Here, the computer is enhancing the user's ability to recognize houses and the people who live in them. It's also incredibly efficient because it includes interactive buttons for things like messaging right next to the houses in the image. This example is the most similar to the interface I'm proposing.
 
@@ -122,6 +120,53 @@ Though Microsoft has only released a limited amount of detailed information abou
 
 \subsection{Putting It All Together}
 
+My dream design, essentially, takes the interface in Figure 4 and puts it in the Microsoft HoloLens. Instead of looking at the houses through the phone, the user wears the headset and has their reality augmented by the various data and interface elements. But the key element of this design, however, is that the user interacts with it via gestures. In the app in Figure 4, the user can call a friend by hitting the phone icon next to their picture. Since my dream design eliminates the screen of the device, they cannot use the button in this way. However, in my design, the user can still press this button by pressing the button they see. Figure 5 is a (crude) illustration of this interface. The user is walking down a street and they can see Yelp reviews of nearby restaurants right before their eyes. Each review has a button to get directions to the restaurant. The user simply points at the button and the interface begins route guidance with arrows along the pavement guiding them.
+
+The user could pull up apps and windows via pressing on short cuts on a kind of ``desktop''. The dream design would also automatically open apps using image recognition. When the user sees a restaurant, the dream design would bring up reviews for that restaurant on Yelp. When the user sees a movie poster, the dream design would bring up the IMDB page for the movie, or recent news.
+
+For more complex commands, the dream design could also incorporate a kind of ``on-screen keyboard''. The interface projects a standard QWERTY keyboard over the user's field of view and they could point to individual letters to ``type''. 
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{usage}
+\caption{A crude mock-up of my ``Dream Design''. Street image credit [13]}
+\end{figure}
+
+\subsection{This Is Possible With Existing Technology}
+
+From what we know about the Microsoft HoloLens, this functionality is completely reasonable. The HoloLens allows the users to manipulate virtual objects with their hands; this requires significantly more sophisticated software than that needed to recognize a finger merely \emph{pointing} to a virtual object. We also know the HoloLens can project complex virtual objects onto the world around the user, like objects on tables; displaying a simple green arrow lining the pavement cannot be more complicated than placing a complex 3D object on a surface.
+
+Assuming the robust capability of the HoloLens to detect gestures, the Dream Design could incorporate direct manipulation interface elements found in desktop applications. The user could change the size of the Yelp ``window'' by pinching the corners and stretching it out. The user could also swipe it away or hit a familiar X in the upper corner. At its absolute simplest, the Dream Design could be, essentially, just a conventional two-dimensional desktop environment displayed over the world via the HoloLens with the tip of the user's finger as the conventional mouse cursor. But the design can be extended far beyond familiar computer interfaces to integrate more closely with the user's world. It can make use of three dimensions by incorporating apps like the IKEA catalog or three-dimensional direction arrows via Google Maps. 
+
+\section{Usability}
+
+To discuss how usable this Dream Design would actually be, I will discuss how the design would likely fare in each of Jakob Nielsen's five Usability Metrics [14]: learnability, efficiency, memorability, errors, and satisfaction. I believe the design would be highly learnable and memorable. The design would vary in efficiency over different tasks and different implementations of apps. It could potentially have a high error rate because the interface is \emph{too} intuitive. Finally, though this metric is subjective, I suspect the interface will be \emph{highly} satisfying to use because its integration would be so seamless in the user experience.
+
+\subsection{Learnability}
+
+Learnability is a metric that answers the question ``How easy is it for users to accomplish basic tasks the first time they encounter the design?'' [14]. I believe this interface will be highly learnable because interacting with it will mimic the way users interact with the real world. Short of mind-reading, this interface could be the most learnable interface possible, because the user literally points at what they want. Humans intuitively use their hands and fingers to point at things. A person learning to use a desktop computer for the first time often points to things on the screen before the person instructing them explains how the mouse works. Since most of the interaction with the interface would be through pointing and ``clicking'' (more apt terminology like ``pressing'', ``touching'', or simply ``pointing'' would likely be necessary), the user would be able to easily figure out how to point at things to interact with the system. 
+
+There would be other elements necessary for the user to learn, such as returning to their list of apps, opening and closing apps, pulling up the on-screen keyboard, and other specific operating system interactions. However, since the experience would be so integrated and service based, there would be very few operating system commands such as switching apps that could be presented in a very straightforward way with buttons depicting familiar symbols, likely out of the way in one of the corners of the user's view.
+
+\subsection{Efficiency}
+
+Efficiency is a metric that answers the question ``Once users have learned the design, how quickly can they perform tasks?'' [14]. Efficiency is where this design would be most lacking. Since the core functionality of the interface is based on simple input like pointing and simple gestures, input will either require strings of many points and gestures, or the command space will be very limited to only allow for certain modes of interacting. This limitation would not be necessarily bad because many of the use cases do not require input: most use cases just involve displaying information. However, apps will either have to have very limited functionality, organize their capabilities through a hierarchy of many buttons the user must navigate through, or make use of the on-screen keyboard, which would likely be hard to type on quickly. Consider an app like Yelp. Yelp could limit its functionality to have no input: it gives you reviews when you see a restaurant. However, one of the key uses of Yelp is \emph{finding} restaurants to go to, so they would want to have a button to find nearby restaurants. However, a Yelp user often wants to filter by price, food type, distance, and other factors, so those must all be buttons. Also, Yelp is not limited to only restaurants, so it must now have more buttons to allow the user to select which kind of establishment they are looking for. Suddenly the user is traversing a maze of buttons to get what they want. The app could also mimic the current Yelp website and require the user to search by typing keywords, but now the user has to use the on-screen keyboard.
+
+\subsection{Memorability}
+
+Memorability is a metric that answers the question ``When users return to the design after a period of not using it, how easily can they reestablish proficiency?'' [14]. Like learnability, memorability will be incredibly high with this interface because there will be very little to remember. Pointing is so intuitive that the user may even do it without remembering that is the actual intended way of interacting with the system. Also, much of it will be automatic based on image recognition and just display information, so remembering how to use the interface is somewhat irrelevant; the user only needs to remember how to read.
+
+\subsection{Errors}
+
+Errors is a metric that answers the question ``How many errors do users make, how severe are these errors, and how easily can they recover from the errors?'' [14]. Errors as a usability metric have a subtle and specific definition: an error is when the user does a deliberate action expecting a result, and the system produces a different result. On the one hand, errors will be incredibly low with this design because it is hard for a user to mess up pointing. The interface is designed to mimic the way humans interact with the world outside of computers very closely. If it achieves this goal, the user's natural inclination when interacting with the design will do exactly what they expect. Pointing at things will select them, grabbing things by the corner and dragging them will move them, pinching the corners of things and stretching them will resize them. On the other hand, however, since we're treating the user interface elements as if they are real-life entities, the user will try to interact with them in all the ways they interact with the real world. Traditional computers benefit from only having a mouse cursor to interpret: this interface will have a complex set of hands. Certain things the user will want to do will simply not be implemented. The user may come up with gestures that haven't been programmed in that they can do to real things---gestures like throwing, waving, and making various shapes with the hands and fingers. We cannot know until we put the system in front of people, but I suspect users will find ways to interact with the interface that weren't considered by the developers.
+
+\subsection{Satisfaction}
+
+Satisfaction is a metric that answers the question ``How pleasant is it to use the design?'' [14]. Hopefully, this is the interface's most successful usability metric. The motivation behind this entire design is to make something that the user feels connected to. They should feel like this computer system is like an article of clothing, or a pair of glasses, or sunscreen. They should feel like the augmentations are not just seamless, but actually benefit their lives. If this design achieves its mission, it should be incredibly fun, natural, and satisfying to use.
+
+\section{Conclusion}
+
+This is not science fiction. All the hardware discussed in this paper currently exists. Interfaces similar to this, and even more complex, also already exist. This is a completely feasible dream.
 
 
 \section{Sources}
@@ -146,6 +191,8 @@ Though Microsoft has only released a limited amount of detailed information abou
 	\item https://www.microsoft.com/microsoft-hololens/en-us/faq
 	\item https://www.microsoft.com/microsoft-hololens/en-us/hardware
     \item http://www.microsoft.com/microsoft-hololens/en-us
+    \item http://www.bankingtech.com/files/2013/01/high-street-scene.jpg
+    \item http://www.nngroup.com/articles/usability-101-introduction-to-usability/
 \end{enumerate}
 
 
