@@ -1,13 +1,12 @@
-// Period, in millis, between two animations post-flick
-// Coefficient of friction we'll use to slow down sliding
-var FRICTION_COEF = .97;
-
-// Random boxes will have dimensions between MINIMUM_BOX_SIZE
-// and MAXIMUM_BOX_SIZE
-var MAXIMUM_BOX_SIZE = 100;
-var MINIMUM_BOX_SIZE = 50;
-
 var BoxesTouch = {
+    // Period, in millis, between two animations post-flick
+    // Coefficient of friction we'll use to slow down sliding
+    FRICTION_COEF : .97,
+
+    // Random boxes will have dimensions between MINIMUM_BOX_SIZE
+    // and MAXIMUM_BOX_SIZE
+    MAXIMUM_BOX_SIZE : 100,
+    MINIMUM_BOX_SIZE : 50,
     /**
      * Sets up the given jQuery collection as the drawing area(s).
      */
@@ -120,20 +119,20 @@ var BoxesTouch = {
 
             // Set the drawing area's state to indicate that it is
             // in the middle of a move.
-            touch.target.movingBox = jThis;
+            jThis.movingBox = jThis;
             
 
-            touch.target.deltaX = touch.pageX - startOffset.left;
-            touch.target.deltaY = touch.pageY - startOffset.top;
+            jThis.deltaX = touch.pageX - startOffset.left;
+            jThis.deltaY = touch.pageY - startOffset.top;
 
 
             // These will represent coordinates at the previous step
             // versus the coordinates now. They will be used for
             // computing velocity.
-            touch.target.prevX = startOffset.left;
-        	touch.target.prevY = startOffset.top;
-        	touch.target.currentX = startOffset.left;
-        	touch.target.currentY = startOffset.top;
+            jThis.prevX = startOffset.left;
+        	jThis.prevY = startOffset.top;
+        	jThis.currentX = startOffset.left;
+        	jThis.currentY = startOffset.top;
         });
 
         // Eat up the event so that the drawing area does not

@@ -1,3 +1,4 @@
 *.aux
-dream-design/dreamdesign.log
 *.gz
+*.log
+dream-design/usage.psd
