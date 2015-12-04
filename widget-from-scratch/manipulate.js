@@ -4,7 +4,15 @@ something not jQuery it still works*/
 (function ( $ ) {
     /* */
     $.fn.manipulate = function ( callback ) {
-        var startMove = function ( event ) {
+        this.css( {
+            "cursor":"move",
+            "position":"absolute",
+        } );
+
+
+
+
+        this.mousedown( function( event ) {
             var eThis = event.target,
                 jThis = $(eThis),
                 startOffset = jThis.offset();
@@ -13,59 +21,56 @@ something not jQuery it still works*/
             eThis.offsetX = event.pageX - startOffset.left;
             eThis.offsetY = event.pageY - startOffset.top;
 
-            eThis.moving = true;
-        };
-        var trackMove = function ( event ) {
-            var eThis = event.target,
-                jThis = $(eThis);
+            jThis.mousemove( function( event ) {
+                var eThis = event.target,
+                    jThis = $(eThis),
+                    startOffset = jThis.offset();
 
-            if ( eThis.moving ) {
                 var newX = event.pageX - eThis.offsetX,
-                    newY = event.pageY - eThis.offsetY;
+                    newY = event.pageY - eThis.offsetY,
+                    parentWidth = jThis.parent().width(),
+                    parentHeight = jThis.parent().height();
 
-                if( !checkBounds( jThis, newX, newY) ) {
-                    
-                } 
+                // left side
+                if ( newX <= parentWidth / 2 ) {
+                    if( newX <= 0 ){
+                        newX = 0;
 
+                        eThis.offsetX = event.pageX - startOffset.left;
+                    }
 
-                jThis.css( {
-                    left: event.pageX - eThis.offsetX,
-                    top: event.pageY - eThis.offsetY
-                } );
-            }
-        };
+                    jThis.css( {
+                        left: newX,
+                        right:""
+                    } );
+                }
 
-        var endMove = function ( event ) {
-            var eThis = event.target;
-            
-            eThis.moving = false;
-        };
+                // right side
+                else {
+                    // Distance from the right should be the full parent width
+                    // minus the distance of box from the left and the width of
+                    // the box
 
+                    newRight = parentWidth - (event.pageX - eThis.offsetX) - jThis.width();
 
-        /**
-         * Returns true if the box is entirely inside the parent container
-         */
-        checkBounds: function(box, newX, newY){
-            // We benefit from the boxes being positioned relative to the parent.
-            // 0 is the top/left and height/width is the position of the top/right
-            return newX > 0             // left side. 
-                && newY > 0             // top
-                && newX + box.width() 
-                        < box.parent().width()      // right side.
-                && newY + box.height() 
-                        < box.parent().height();    // bottom.
-        }
+                    if ( newRight <= 0 ) {
+                        newRight = 0;
 
+                        eThis.offsetX = event.pageX - startOffset.left;
+                    }
 
-        this.css( {
-            "cursor":"move",
-            "position":"absolute",
-        } );
+                    jThis.css( {
+                        right: newRight,
+                        left: ""
+                    } );
+                }
+            });
+
+            jThis.mouseleave( function ( event ) {
+                event.target.unbind("mousemove");
+            });
+        });
         
-        this.mousedown(startMove);
-        this.mousemove(trackMove);
-        this.mouseup(endMove);
-
         return this;
     };
  
