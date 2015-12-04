@@ -114,25 +114,26 @@ var BoxesTouch = {
             $(touch.target).addClass("box-highlight");
 
             // Take note of the box's current (global) location.
-            var jThis = $(touch.target),
+            var tThis = touch.target,
+                jThis = $(tThis),
                 startOffset = jThis.offset();
 
             // Set the drawing area's state to indicate that it is
             // in the middle of a move.
-            jThis.movingBox = jThis;
+            tThis.movingBox = jThis;
             
 
-            jThis.deltaX = touch.pageX - startOffset.left;
-            jThis.deltaY = touch.pageY - startOffset.top;
+            tThis.deltaX = touch.pageX - startOffset.left;
+            tThis.deltaY = touch.pageY - startOffset.top;
 
 
             // These will represent coordinates at the previous step
             // versus the coordinates now. They will be used for
             // computing velocity.
-            jThis.prevX = startOffset.left;
-        	jThis.prevY = startOffset.top;
-        	jThis.currentX = startOffset.left;
-        	jThis.currentY = startOffset.top;
+            tThis.prevX = startOffset.left;
+        	tThis.prevY = startOffset.top;
+        	tThis.currentX = startOffset.left;
+        	tThis.currentY = startOffset.top;
         });
 
         // Eat up the event so that the drawing area does not
