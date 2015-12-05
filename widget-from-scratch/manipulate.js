@@ -67,12 +67,43 @@ something not jQuery it still works */
         var trackMouse = function ( target ) {
 
             var jThis = $(target),
-                mouse = $.fn.manipulate.mouse;
-            
-            jThis.offset( {
-                left: mouse.x - target.deltaX,
-                top: mouse.y - target.deltaY
-            });
+                mouse = $.fn.manipulate.mouse,
+                boxOffset = jThis.offset();
+                newBoxPos = {
+                    left: mouse.x - target.deltaX,
+                    top:  mouse.y - target.deltaY,
+                };
+
+            // check left side
+            if ( newBoxPos.left <= 0) {
+                
+                // Since this is up against the left side, offset is mouse
+                // distance from left side. Also, boxOffset.left = 0 so 
+                // mouse.x - bosOffset.left = mouse.x
+
+                target.deltaX = mouse.x;
+
+                // Set the new values. We may need to zero-out right value
+                newBoxPos.left = 0;
+                newBoxPos.right = "";
+            }
+
+
+            // check top side
+            if ( newBoxPos.top <= 0) {
+                
+                // Since this is up against the top side, offset is mouse
+                // distance from top side. Also, boxOffset.top = 0 so 
+                // mouse.y - bosOffset.yop = mouse.y
+
+                target.deltaY = mouse.y;
+
+                // Set the new values. We may need to zero-out bottom value
+                newBoxPos.top = 0;
+                newBoxPos.bottom = "";
+            }
+
+            jThis.offset( newBoxPos );
 
 
             if ( target.move ) {
@@ -85,30 +116,38 @@ something not jQuery it still works */
         // Here is where the tracking magic begins
         this.mousedown( function ( event ) {
 
-            var target = event.target,
-                startOffset = $(target).offset(),
+            // In a jQuery mouse event, 'this' is the element that has the event
+            // bound to it. It's a little less expressive to use this than
+            // event.target, but event.target could have implications if the
+            // user drags over another manipulable object that has a higher
+            // z-index.
+
+            var startOffset = $(this).offset(),
                 // I could use event.pageX and event.pageY but this is more
                 // consistent
                 mouse = $.fn.manipulate.mouse;
 
 
-            target.move = true;
+            this.move = true;
 
             // We need to know the distance between the place they click and the
             // upper left-hand corner. This stores what that is when they start
             // off
-            target.deltaX = mouse.x - startOffset.left;
-            target.deltaY = mouse.y - startOffset.top;
+            this.deltaX = mouse.x - startOffset.left;
+            this.deltaY = mouse.y - startOffset.top;
 
             
-            trackMouse(target);
+            trackMouse(this);
+
+
+            // When we mouse up we want to end the magic.
+
+            $(this).mouseup( function ( event ) {
+                this.move = false;
+                $(this).unbind("mouseup");
+            });
 
             event.stopPropagation();
-        });
-
-        // When we mouse up we want to end the magic
-        this.mouseup( function ( event ) {
-            event.target.move = false;
         });
 
         return this;
