@@ -7,6 +7,13 @@ something not jQuery it still works*/
         this.css( {
             "cursor":"move",
             "position":"absolute",
+            //don't want object to be highlightable. Browser support a little spotty
+            "-webkit-touch-callout": "none",
+            "-webkit-user-select": "none",
+            "khtml-user-select": "none",
+            "-moz-user-select": "none",
+            "-ms-user-select": "none",
+            "user-select": "none"
         } );
 
 
@@ -17,11 +24,12 @@ something not jQuery it still works*/
                 jThis = $(eThis),
                 startOffset = jThis.offset();
             
+            eThis.
             // Save the mouse offset in the event target
             eThis.offsetX = event.pageX - startOffset.left;
             eThis.offsetY = event.pageY - startOffset.top;
 
-            jThis.mousemove( function( event ) {
+            jThis.parent().mousemove( function( event ) {
                 var eThis = event.target,
                     jThis = $(eThis),
                     startOffset = jThis.offset();
@@ -64,13 +72,48 @@ something not jQuery it still works*/
                         left: ""
                     } );
                 }
-            });
 
-            jThis.mouseleave( function ( event ) {
-                event.target.unbind("mousemove");
+                // top
+                if ( newY <= parentHeight / 2 ) {
+                    if( newY <= 0 ){
+                        newY = 0;
+
+                        eThis.offsetY = event.pageY - startOffset.top;
+                    }
+
+                    jThis.css( {
+                        top: newY,
+                        bottom:""
+                    } );
+                }
+
+                // bottom
+                else {
+                    // Distance from the right should be the full parent width
+                    // minus the distance of box from the left and the width of
+                    // the box
+
+                    newBottom = parentHeight - (event.pageY - eThis.offsetY) - jThis.height();
+
+                    if ( newBottom <= 0 ) {
+                        newBottom = 0;
+
+                        eThis.offsetY = event.pageY - startOffset.top;
+                    }
+
+                    jThis.css( {
+                        bottom: newBottom,
+                        right: ""
+                    } );
+                }
             });
         });
         
+
+        this.mouseup( function ( event ) {
+            $(event.target.parent).unbind("mousemove");
+            $(event.target.parent).unbind("mouseup");
+        });
         return this;
     };
  
