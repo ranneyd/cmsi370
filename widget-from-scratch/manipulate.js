@@ -22,7 +22,7 @@ something not jQuery it still works */
     $("body").mousemove( function ( event ) {
         $.fn.manipulate.mouse = {
             x: event.pageX,
-            y: event.pageY
+            y: event.pageY,
         };
     });
 
@@ -67,6 +67,8 @@ something not jQuery it still works */
         var trackMouse = function ( target ) {
 
             var jThis = $(target),
+                parent = jThis.parent(),
+                parentOffset = parent.offset(),
                 mouse = $.fn.manipulate.mouse,
                 boxOffset = jThis.offset();
                 newBoxPos = {
@@ -75,31 +77,31 @@ something not jQuery it still works */
                 };
 
             // check left side
-            if ( newBoxPos.left <= 0) {
+            if ( newBoxPos.left <= parentOffset.left) {
                 
                 // Since this is up against the left side, offset is mouse
                 // distance from left side. Also, boxOffset.left = 0 so 
                 // mouse.x - bosOffset.left = mouse.x
 
-                target.deltaX = mouse.x;
+                target.deltaX = mouse.x - parentOffset.left;
 
                 // Set the new values. We may need to zero-out right value
-                newBoxPos.left = 0;
+                newBoxPos.left = parentOffset.left;
                 newBoxPos.right = "";
             }
 
 
             // check top side
-            if ( newBoxPos.top <= 0) {
+            if ( newBoxPos.top <= parentOffset.top) {
                 
                 // Since this is up against the top side, offset is mouse
                 // distance from top side. Also, boxOffset.top = 0 so 
                 // mouse.y - bosOffset.yop = mouse.y
 
-                target.deltaY = mouse.y;
+                target.deltaY = mouse.y - parentOffset.top;
 
                 // Set the new values. We may need to zero-out bottom value
-                newBoxPos.top = 0;
+                newBoxPos.top = parentOffset.top;
                 newBoxPos.bottom = "";
             }
 
