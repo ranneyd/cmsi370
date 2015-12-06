@@ -37,7 +37,11 @@ still works */
 
     $.fn.manipulate = function ( callback ) {
 
-        this.css( {
+        var boxWrapper = this.wrap("<div></div>").parent();
+
+        /* DRAGGING */
+
+        boxWrapper.css( {
             // Give the movable object that nice moving crosshair to signify that it is movable
             "cursor":"move",
             // The manipulation requires the object to be absolutely positioned
@@ -49,38 +53,54 @@ still works */
             "khtml-user-select": "none",
             "-moz-user-select": "none",
             "-ms-user-select": "none",
-            "user-select": "none"
+            "user-select": "none",
+            "width": this.outerWidth(),
+            "height": this.outerHeight(),
+            "left": this.css("left"),
+            "right": this.css("right"),
+            "top": this.css("top"),
+            "bottom": this.css("bottom"),
+            "padding":"0px",
+            "margin":"0px"
         } );
+
+        this.css({
+            "position":"absolute",
+            "left": "0px",
+            "right": "",
+            "top": "0px",
+            "bottom": "",
+        })
 
         /* Why not mousemove? */
 
         /* This method is better for a few reasons. Event listening is a little cumbersome because
         /* the events have to be bound and unbound. */
 
-        var trackMouse = function ( target ) {
+        var trackMouse = function ( target, resize ) {
 
             var jThis = $(target),
                 jParent = jThis.parent(),
                 box = {
-                    width: jThis.outerWidth(),
-                    height: jThis.outerHeight(),
+                    "width": jThis.outerWidth(),
+                    "height": jThis.outerHeight(),
                 }
                 parent = {
-                    left: jParent.offset().left,
-                    top: jParent.offset().top,
-                    width: jParent.outerWidth(),
-                    height: jParent.outerHeight(),
-                    right: jParent.offset().left + jParent.outerWidth(),
-                    bottom: jParent.offset().top + jParent.outerHeight()
+                    "left": jParent.offset().left,
+                    "top": jParent.offset().top,
+                    "width": jParent.outerWidth(),
+                    "height": jParent.outerHeight(),
+                    "right": jParent.offset().left + jParent.outerWidth(),
+                    "bottom": jParent.offset().top + jParent.outerHeight()
                 },
 
                 mouse = $.fn.manipulate.mouse,
 
                 newBoxPos = {
-                    left: mouse.x - target.deltaX - parent.left,
-                    top:  mouse.y - target.deltaY - parent.top,
-                    right: parent.right - mouse.x - (box.width - target.deltaX),
-                    bottom: parent.bottom - mouse.y - (box.height - target.deltaY),
+                    "left": mouse.x - target.deltaX - parent.left,
+                    "top":  mouse.y - target.deltaY - parent.top,
+                    "right": parent.right - mouse.x - (box.width - target.deltaX),
+                    "bottom": parent.bottom - mouse.y - (box.height - target.deltaY),
                 };
 
             // check left side. Remember it cannot leave the parent.
@@ -130,12 +150,12 @@ still works */
             }
 
             var callbackProps = {
-                left: newBoxPos.left,
-                right: newBoxPos.right,
-                top: newBoxPos.top,
-                bottom: newBoxPos.bottom,
-                leftSide: newBoxPos.left < newBoxPos.right,
-                topSide: newBoxPos.top < newBoxPos.bottom
+                "left": newBoxPos.left,
+                "right": newBoxPos.right,
+                "top": newBoxPos.top,
+                "bottom": newBoxPos.bottom,
+                "leftSide": newBoxPos.left < newBoxPos.right,
+                "topSide": newBoxPos.top < newBoxPos.bottom
             };
 
             // check bottom side. This is basically the same as the check for the right side but in
@@ -168,13 +188,13 @@ still works */
 
             if ( target.move ) {
                 window.requestAnimationFrame( function () {
-                    trackMouse( target );
+                    trackMouse( target, resize );
                 });
             }
         }
 
         // Here is where the tracking magic begins
-        this.mousedown( function ( event ) {
+        boxWrapper.mousedown( function ( event ) {
 
             // In a jQuery mouse event, 'this' is the element that has the event bound to it. It's a
             // little less expressive to use this than event.target, but event.target could have
@@ -194,7 +214,7 @@ still works */
             this.deltaY = mouse.y - startOffset.top;
 
             
-            trackMouse(this);
+            trackMouse(this, false);
 
             // When we mouse up we want to end the magic. There are also implications with the
             // bounds checking where the mouse can end up outside the object. No matter where you
@@ -214,6 +234,53 @@ still works */
 
             event.stopPropagation();
         });
+
+
+        /* Resizing */
+
+        var handleStyles = {
+            "position":"absolute",
+            "background-color":"red",
+            "margin":"0px",
+            "padding":"0px",
+        };
+
+        boxWrapper.append(
+            $("<div>")
+                .css(handleStyles)
+                .css({
+                    "width":"10px",
+                    "height": boxWrapper.outerHeight()-20 + "px",
+                    "right": "0px",
+                    "top":"10px",
+                    "cursor":"e-resize",
+                })
+                .mousedown( function ( event ) { 
+                    var startOffset = $(this).offset(),
+
+                    mouse = $.fn.manipulate.mouse;
+
+                    this.resize = true;
+
+
+                    this.deltaX = mouse.x - startOffset.left;
+                    this.deltaY = mouse.y - startOffset.top;
+
+                    
+                    trackMouse( this, true );
+
+                    var thisBox = this;
+
+                    var mouseUpFunction = function ( event ) {
+                        thisBox.resize = false;
+                        $("body").unbind("mouseup", mouseUpFunction);
+                    };
+
+                    $("body").mouseup( mouseUpFunction );
+
+                    event.stopPropagation();
+                })
+        );
 
         return this;
     };
