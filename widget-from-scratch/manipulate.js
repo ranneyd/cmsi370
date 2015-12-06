@@ -67,72 +67,77 @@ still works */
                     height: $("body").outerHeight()
                 }
 
-                parentOffset = {
+                parentBounds = {
                     left: parent.offset().left,
                     top: parent.offset().top,
-                    right: bodySize.width - parent.outerWidth() - parent.offset().left,
-                    bottom: bodySize.height - parent.outerHeight() - parent.offset().top
+                    right: parent.offset().left + parent.outerWidth(),
+                    bottom: parent.offset().top + parent.outerHeight()
                 },
 
                 mouse = $.fn.manipulate.mouse,
 
                 newBoxPos = {
-                    left: mouse.x - target.deltaX,
-                    top:  mouse.y - target.deltaY,
-                    right: bodySize.width - mouse.x,
-                    bottom: bodySize.height - mouse.y,
+                    left: mouse.x - target.deltaX - parentBounds.left,
+                    top:  mouse.y - target.deltaY - parentBounds.top,
+                    right: parentBounds.right - mouse.x - (jThis.outerWidth() - target.deltaX),
+                    bottom: parentBounds.bottom - mouse.y - (jThis.outerHeight() - target.deltaY),
                 };
 
             // check left side. Remember it cannot leave the parent.
-            if ( newBoxPos.left <= parentOffset.left) {
+            if ( newBoxPos.left <= 0) {
                 
                 // We assume at this point that the left side of our object is the left side of the
                 // parent. So the global mouse position with respect to the parent tells us the new
                 // offset from the object
 
-                target.deltaX = mouse.x - parentOffset.left;
+                target.deltaX = mouse.x - parentBounds.left;
 
                 // Set the new value. Remember that the new position is the left side of the parent
-                newBoxPos.left = parentOffset.left;
+                newBoxPos.left = 0;
             }
 
-            // // check right side. 
-            // if ( newBoxPos.right <= parentOffset.right) {
+            // check right side. 
+            if ( newBoxPos.right <= 0) {
                 
-            //     // We assume at this point that the left side of our object is
-            //     // the left side of the parent. So the global mouse position
-            //     // with respect to the parent tells us the new offset from the
-            //     // object
+                // We assume at this point that the left side of our object is the left side of the
+                // parent. So the global mouse position with respect to the parent tells us the new
+                // offset from the object
 
-            //     target.deltaX = mouse.x - parentOffset.left;
+                target.deltaX = mouse.x - jThis.offset().left+1;
 
-            //     // Set the new value. Remember that the new position is the
-            //     // left side of the parent
-            //     newBoxPos.left = parentOffset.left;
-            // }
+                // Set the new value. Remember that the new position is the left side of the parent
+                newBoxPos.right = 0;
+            }
 
 
             // check top side
-            if ( newBoxPos.top <= parentOffset.top) {
+            if ( newBoxPos.top <= 0) {
                 
                 // We assume at this point that the top side of our object is the top side of the
                 // parent. So the global mouse position with respect to the parent tells us the new
                 // offset from the object
 
-                target.deltaY = mouse.y - parentOffset.top;
+                target.deltaY = mouse.y - parentBounds.top;
 
                 // Set the new value. Remember that the new position is the top side of the parent
-                newBoxPos.top = parentOffset.top;
+                newBoxPos.top = 0;
             }
 
-            if( newBoxPos.left - parentOffset.left < newBoxPos.right - parentOffset.right){
+            if( newBoxPos.left < newBoxPos.right){
                 newBoxPos.right = ""
             }
             else {
                 newBoxPos.left = ""
             }
 
-            jThis.offset( newBoxPos );
+            if( newBoxPos.top < newBoxPos.bottom){
+                newBoxPos.bottom = ""
+            }
+            else {
+                newBoxPos.top = ""
+            }
+
+            jThis.css( newBoxPos );
 
 
             if ( target.move ) {
