@@ -60,27 +60,27 @@ still works */
         var trackMouse = function ( target ) {
 
             var jThis = $(target),
-                parent = jThis.parent(),
-
-                bodySize = {
-                    width: $("body").outerWidth(),
-                    height: $("body").outerHeight()
+                jParent = jThis.parent(),
+                box = {
+                    width: jThis.outerWidth(),
+                    height: jThis.outerHeight(),
                 }
-
-                parentBounds = {
-                    left: parent.offset().left,
-                    top: parent.offset().top,
-                    right: parent.offset().left + parent.outerWidth(),
-                    bottom: parent.offset().top + parent.outerHeight()
+                parent = {
+                    left: jParent.offset().left,
+                    top: jParent.offset().top,
+                    width: jParent.outerWidth(),
+                    height: jParent.outerHeight(),
+                    right: jParent.offset().left + jParent.outerWidth(),
+                    bottom: jParent.offset().top + jParent.outerHeight()
                 },
 
                 mouse = $.fn.manipulate.mouse,
 
                 newBoxPos = {
-                    left: mouse.x - target.deltaX - parentBounds.left,
-                    top:  mouse.y - target.deltaY - parentBounds.top,
-                    right: parentBounds.right - mouse.x - (jThis.outerWidth() - target.deltaX),
-                    bottom: parentBounds.bottom - mouse.y - (jThis.outerHeight() - target.deltaY),
+                    left: mouse.x - target.deltaX - parent.left,
+                    top:  mouse.y - target.deltaY - parent.top,
+                    right: parent.right - mouse.x - (box.width - target.deltaX),
+                    bottom: parent.bottom - mouse.y - (box.height - target.deltaY),
                 };
 
             // check left side. Remember it cannot leave the parent.
@@ -90,7 +90,7 @@ still works */
                 // parent. So the global mouse position with respect to the parent tells us the new
                 // offset from the object
 
-                target.deltaX = mouse.x - parentBounds.left;
+                target.deltaX = mouse.x - parent.left;
 
                 // Set the new value. Remember that the new position is the left side of the parent
                 newBoxPos.left = 0;
@@ -99,28 +99,42 @@ still works */
             // check right side. 
             if ( newBoxPos.right <= 0) {
                 
-                // We assume at this point that the left side of our object is the left side of the
-                // parent. So the global mouse position with respect to the parent tells us the new
-                // offset from the object
+                /* We want to create a deltaX assuming the box is up against the right side like we
+                /* do when we check the left side. The problem is we don't have a good way to get
+                /* the deltaX with that assumption. One way is to look at it like this 
+                /*  ________________
+                /* |    _______     |
+                /* |-a-|--b--[]|    |
+                /* |   |_______|    |
+                /* |________________|
+                /* 
+                /* If this outer box is the window, and the box within it is the parent, and the []
+                /* inside is the manipulatable object, then the deltaX will be the mouse.x minus (a
+                /* + b). To get b, however, we need to take the width of the parent minus the width
+                /* of the child (since the child will be all the way up against the right side).
+                /* Then we get the following */
 
-                target.deltaX = mouse.x - jThis.offset().left+1;
+                target.deltaX = mouse.x - (parent.left + parent.width - box.width);
 
                 // Set the new value. Remember that the new position is the left side of the parent
                 newBoxPos.right = 0;
             }
 
 
-            // check top side
+            // check top side. This is basically the same as the check for the left side but in
+            // y instead of x
             if ( newBoxPos.top <= 0) {
-                
-                // We assume at this point that the top side of our object is the top side of the
-                // parent. So the global mouse position with respect to the parent tells us the new
-                // offset from the object
+                target.deltaY = mouse.y - parent.top;
 
-                target.deltaY = mouse.y - parentBounds.top;
-
-                // Set the new value. Remember that the new position is the top side of the parent
                 newBoxPos.top = 0;
+            }
+
+            // check bottom side. This is basically the same as the check for the right side but in
+            // y instead of x
+            if ( newBoxPos.bottom <= 0) {
+                target.deltaY = mouse.y - (parent.top + parent.height - box.height);
+
+                newBoxPos.bottom = 0;
             }
 
             if( newBoxPos.left < newBoxPos.right){
