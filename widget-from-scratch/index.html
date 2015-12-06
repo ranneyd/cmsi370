@@ -9,6 +9,7 @@
             width:100%;
             margin:0px;
             padding:0px;
+            font-family:arial;
         }
         #manipulable-object {
             border: 1px solid black;
@@ -23,9 +24,20 @@
             top:50px; 
             border: solid black 1px;
         }
+        #stats{
+            position:absolute;
+            left:10px;
+            top:10px;
+            border: solid black 1px;
+        }
     </style>
     <body>
-
+        <div id="stats">
+            <span id="topSide">^</span> top: <span id="top"></span>
+            bottom: <span id="bottom"></span>  <br>
+            <span id="leftSide">&lt;</span> left: <span id="left"></span>
+            right: <span id="right"></span>  
+        </div>
         <div id="parent">
             <div id="manipulable-object"></div>
         </div>
@@ -42,7 +54,12 @@
         <script type="text/javascript">
             (function(){
                 $("#manipulable-object").manipulate( function (elem, props){
-
+                    $("#top").html(props.top);
+                    $("#bottom").html(props.bottom);
+                    $("#left").html(props.left);
+                    $("#right").html(props.right);
+                    $("#topSide").html(props.topSide? "^" : "v");
+                    $("#leftSide").html(props.leftSide? "<" : ">");
                 });
             })();
         </script>

@@ -129,6 +129,15 @@ still works */
                 newBoxPos.top = 0;
             }
 
+            var callbackProps = {
+                left: newBoxPos.left,
+                right: newBoxPos.right,
+                top: newBoxPos.top,
+                bottom: newBoxPos.bottom,
+                leftSide: newBoxPos.left < newBoxPos.right,
+                topSide: newBoxPos.top < newBoxPos.bottom
+            };
+
             // check bottom side. This is basically the same as the check for the right side but in
             // y instead of x
             if ( newBoxPos.bottom <= 0) {
@@ -153,6 +162,9 @@ still works */
 
             jThis.css( newBoxPos );
 
+            if ( callback ) {
+                callback(target, callbackProps );
+            }
 
             if ( target.move ) {
                 window.requestAnimationFrame( function () {
