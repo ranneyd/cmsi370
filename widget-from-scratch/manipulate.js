@@ -1,7 +1,14 @@
 /* This allows us to not only have a closure but if they have $ aliased as something not jQuery it
 still works */
 
+/* CAUTION: Requires jQuery 1.8 or later */
+
+/* Known issue: If the parent element is sized using percents, then some of the calculations will
+/* produce non-integer results that have undefined behavior */
+
 (function ( $ ) {
+
+    const HANDLE_WIDTH = 10;
 
     /* Track the position of the mouse and save it in the jQuery object for reference. */
 
@@ -65,42 +72,64 @@ still works */
         } );
 
         this.css({
-            "position":"absolute",
-            "left": "0px",
-            "right": "",
-            "top": "0px",
-            "bottom": "",
-        })
+                "position":"absolute",
+                "left": "0px",
+                "right": "",
+                "top": "0px",
+                "bottom": "",
+            })
+            .addClass("manipulable");
+
+
+        // Returns 
+        var parentStats = function( jParent ) {
+            return {
+                    "left": jParent.offset().left,
+                    "top": jParent.offset().top,
+                    "width": jParent.outerWidth(),
+                    "height": jParent.outerHeight(),
+                    "right": jParent.offset().left + jParent.outerWidth(),
+                    "bottom": jParent.offset().top + jParent.outerHeight(),
+                    "edge": {
+                        "left": parseInt(jParent.css("margin-left"),10) 
+                                + parseInt(jParent.css("padding-left"),10)
+                                +  parseInt(jParent.css("border-left-width"),10),
+                        "right": parseInt(jParent.css("margin-right"),10) 
+                                + parseInt(jParent.css("padding-right"),10)
+                                +  parseInt(jParent.css("border-right-width"),10),
+                        "top": parseInt(jParent.css("margin-top"),10) 
+                                + parseInt(jParent.css("padding-top"),10)
+                                +  parseInt(jParent.css("border-top-width"),10),
+                        "bottom": parseInt(jParent.css("margin-bottom"),10) 
+                                + parseInt(jParent.css("padding-bottom"),10)
+                                +  parseInt(jParent.css("border-bottom-width"),10),
+                    }
+                };
+        };
 
         /* Why not mousemove? */
 
         /* This method is better for a few reasons. Event listening is a little cumbersome because
         /* the events have to be bound and unbound. */
 
-        var trackMouse = function ( target, resize ) {
+        var trackMouse = function ( target ) {
 
             var jThis = $(target),
                 jParent = jThis.parent(),
-                box = {
-                    "width": jThis.outerWidth(),
-                    "height": jThis.outerHeight(),
-                }
-                parent = {
-                    "left": jParent.offset().left,
-                    "top": jParent.offset().top,
-                    "width": jParent.outerWidth(),
-                    "height": jParent.outerHeight(),
-                    "right": jParent.offset().left + jParent.outerWidth(),
-                    "bottom": jParent.offset().top + jParent.outerHeight()
-                },
+                parent = parentStats( jParent ),
 
                 mouse = $.fn.manipulate.mouse,
 
+                box = {
+                    "width": jThis.outerWidth(),
+                    "height": jThis.outerHeight(),
+                },
+
                 newBoxPos = {
-                    "left": mouse.x - target.deltaX - parent.left,
-                    "top":  mouse.y - target.deltaY - parent.top,
-                    "right": parent.right - mouse.x - (box.width - target.deltaX),
-                    "bottom": parent.bottom - mouse.y - (box.height - target.deltaY),
+                    "left": mouse.x - target.deltaX - parent.left - parent.edge.left,
+                    "top":  mouse.y - target.deltaY - parent.top - parent.edge.top,
+                    "right": parent.right - parent.edge.right - mouse.x - (box.width - target.deltaX),
+                    "bottom": parent.bottom - parent.edge.bottom - mouse.y - (box.height - target.deltaY),
                 };
 
             // check left side. Remember it cannot leave the parent.
@@ -134,7 +163,7 @@ still works */
                 /* of the child (since the child will be all the way up against the right side).
                 /* Then we get the following */
 
-                target.deltaX = mouse.x - (parent.left + parent.width - box.width);
+                target.deltaX = mouse.x - (parent.right - box.width);
 
                 // Set the new value. Remember that the new position is the left side of the parent
                 newBoxPos.right = 0;
@@ -149,6 +178,15 @@ still works */
                 newBoxPos.top = 0;
             }
 
+            // check bottom side. This is basically the same as the check for the right side but in
+            // y instead of x
+            if ( newBoxPos.bottom <= 0) {
+                target.deltaY = mouse.y - (parent.bottom - box.height);
+
+                newBoxPos.bottom = 0;
+            }
+
+
             var callbackProps = {
                 "left": newBoxPos.left,
                 "right": newBoxPos.right,
@@ -157,14 +195,6 @@ still works */
                 "leftSide": newBoxPos.left < newBoxPos.right,
                 "topSide": newBoxPos.top < newBoxPos.bottom
             };
-
-            // check bottom side. This is basically the same as the check for the right side but in
-            // y instead of x
-            if ( newBoxPos.bottom <= 0) {
-                target.deltaY = mouse.y - (parent.top + parent.height - box.height);
-
-                newBoxPos.bottom = 0;
-            }
 
             if( newBoxPos.left < newBoxPos.right){
                 newBoxPos.right = ""
@@ -188,7 +218,7 @@ still works */
 
             if ( target.move ) {
                 window.requestAnimationFrame( function () {
-                    trackMouse( target, resize );
+                    trackMouse( target );
                 });
             }
         }
@@ -214,7 +244,7 @@ still works */
             this.deltaY = mouse.y - startOffset.top;
 
             
-            trackMouse(this, false);
+            trackMouse(this);
 
             // When we mouse up we want to end the magic. There are also implications with the
             // bounds checking where the mouse can end up outside the object. No matter where you
@@ -245,40 +275,115 @@ still works */
             "padding":"0px",
         };
 
+        var trackResize = function ( target, handle){
+
+            /* Note that this function's target is the HANDLE not the actual box */
+
+            var jHandle = $(target),
+                jBox = jHandle.parent(),
+                jParent = jBox.parent(),
+                parent = parentStats( jParent ),
+
+                mouse = $.fn.manipulate.mouse,
+
+                outerMouse = {
+                    "x": mouse.x + (HANDLE_WIDTH - target.deltaX),
+                    "y": mouse.y + (HANDLE_WIDTH - target.deltaY),
+                }
+
+                box = {
+                    "width": outerMouse.x - jBox.offset().left,
+                    "height": jBox.outerHeight(),
+                },
+
+                newBoxPos = {
+                    "left": jBox.offset().left - parent.left - parent.edge.left,
+                    //"top":  jBox.offset().top - parent.top - parent.edge.top,
+                    "right": parent.right - outerMouse.x - parent.edge.left,
+                    //"bottom": parent.height - jBox.position().top - box.height,
+                    "width":box.width,
+                    "height":box.height,
+                    "deltaX" : target.deltaX,
+                };
+
+
+            if ( newBoxPos.right <= 0) {
+                target.deltaX = HANDLE_WIDTH - (parent.right -parent.edge.right- mouse.x);
+
+                // Set the new value. Remember that the new position is the left side of the parent
+                newBoxPos.right = 0;
+                outerMouse.x = mouse.x +(HANDLE_WIDTH - target.deltaX);
+                box.width = outerMouse.x - jBox.offset().left;
+                newBoxPos.width = box.width;
+            }
+
+
+            if( newBoxPos.left < newBoxPos.right){
+                newBoxPos.right = ""
+            }
+            else {
+                newBoxPos.left = ""
+            }
+
+            // if( newBoxPos.top < newBoxPos.bottom){
+            //     newBoxPos.bottom = ""
+            // }
+            // else {
+            //     newBoxPos.top = ""
+            // }
+
+            jBox.css( newBoxPos );
+            var innerBox = jParent.find(".manipulable");
+            innerBox.outerWidth(box.width);
+            innerBox.outerHeight(box.height);
+
+
+
+            if ( target.resize ) {
+                window.requestAnimationFrame( function () {
+                    trackResize( target, handle );
+                });
+            }
+        };
+
+        var handleClick = function ( event, target, direction ) {
+            var startOffset = $(target).offset(),
+
+            mouse = $.fn.manipulate.mouse;
+
+            target.resize = true;
+
+
+            target.deltaX = mouse.x - startOffset.left;
+            target.deltaY = mouse.y - startOffset.top;
+
+            
+            trackResize( target, direction);
+
+
+            var mouseUpFunction = function ( event ) {
+                target.resize = false;
+                $("body").unbind("mouseup", mouseUpFunction);
+            };
+
+            $("body").mouseup( mouseUpFunction );
+
+            event.stopPropagation();
+        };
+
+
         boxWrapper.append(
             $("<div>")
                 .css(handleStyles)
                 .css({
-                    "width":"10px",
-                    "height": boxWrapper.outerHeight()-20 + "px",
+                    "width": HANDLE_WIDTH +"px",
+                    "height": boxWrapper.outerHeight()- 2*HANDLE_WIDTH + "px",
                     "right": "0px",
-                    "top":"10px",
+                    "top": HANDLE_WIDTH + "px",
                     "cursor":"e-resize",
                 })
                 .mousedown( function ( event ) { 
-                    var startOffset = $(this).offset(),
-
-                    mouse = $.fn.manipulate.mouse;
-
-                    this.resize = true;
-
-
-                    this.deltaX = mouse.x - startOffset.left;
-                    this.deltaY = mouse.y - startOffset.top;
-
-                    
-                    trackMouse( this, true );
-
-                    var thisBox = this;
-
-                    var mouseUpFunction = function ( event ) {
-                        thisBox.resize = false;
-                        $("body").unbind("mouseup", mouseUpFunction);
-                    };
-
-                    $("body").mouseup( mouseUpFunction );
-
-                    event.stopPropagation();
+                    handleClick( event, this, "e");
                 })
         );
 
