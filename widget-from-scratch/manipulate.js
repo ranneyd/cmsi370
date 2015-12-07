@@ -372,6 +372,7 @@ still works */
         };
 
 
+
         boxWrapper.append(
             $("<div>")
                 .css(handleStyles)
