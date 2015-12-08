@@ -9,7 +9,6 @@ still works */
 (function ( $ ) {
 
     const HANDLE_WIDTH = 10;
-
     /* Track the position of the mouse and save it in the jQuery object for reference. */
 
     /* - Why do we need this?*/
@@ -268,17 +267,16 @@ still works */
 
         /* Resizing */
 
-        var handleStyles = {
-            "position":"absolute",
-            "background-color":"red",
-            "margin":"0px",
-            "padding":"0px",
-        };
-
         var trackResize = function ( target, handle){
 
-            /* Note that this function's target is the HANDLE not the actual box */
+            // Takes in parameter handle and direction and returns true if that handle touches that
+            // direction. I know, it's a simple helper function but it's useful.
+            var touches = function ( direction ){
+                return handleDirection.indexOf(direction) !== -1;
+            }
 
+
+            /* Note that this function's target is the HANDLE not the actual box */
             var jHandle = $(target),
                 jBox = jHandle.parent(),
                 jParent = jBox.parent(),
@@ -286,36 +284,50 @@ still works */
 
                 mouse = $.fn.manipulate.mouse,
 
-                outerMouse = {
-                    "x": mouse.x + (HANDLE_WIDTH - target.deltaX),
-                    "y": mouse.y + (HANDLE_WIDTH - target.deltaY),
+                mouse = {
+                    "x": mouse.x,
+                    "leftX": mouse.x - target.deltaX,
+                    "rightX": mouse.x + (HANDLE_WIDTH - target.deltaX),
+                    "y": mouse.y,
+                    "topY": mouse.y - target.deltaY,
+                    "bottomY": mouse.y + (HANDLE_WIDTH - target.deltaY),
                 }
 
                 box = {
-                    "width": outerMouse.x - jBox.offset().left,
-                    "height": jBox.outerHeight(),
+                    "width": touches( "e" ) || touches( "w" )
+                                ? mouse.rightX - jBox.offset().left
+                                : jBox.outerWidth(),
+                    "height": touches( "n" ) || touches( "s" )
+                                ? mouse.outerY - jBox.offset().top
+                                : jBox.outerHeight()
                 },
 
                 newBoxPos = {
-                    "left": jBox.offset().left - parent.left - parent.edge.left,
-                    //"top":  jBox.offset().top - parent.top - parent.edge.top,
-                    "right": parent.right - outerMouse.x - parent.edge.left,
-                    //"bottom": parent.height - jBox.position().top - box.height,
+                    "left": touches( "w" )
+                            ? mouse.
+                            : jBox.offset().left - parent.left - parent.edge.left,
+                    "top":  jBox.offset().top - parent.top - parent.edge.top,
+                    "right": parent.right - mouse.rightX - parent.edge.left,
+                    "bottom": parent.bottom - mouse.rightX - parent.edge.top,
                     "width":box.width,
-                    "height":box.height,
-                    "deltaX" : target.deltaX,
+                    "height":box.height
                 };
+
+            var setRight = function(){
+                mouse.rightX = mouse.x +(HANDLE_WIDTH - target.deltaX);
+                box.width = mouse.rightX - jBox.offset().left;
+                newBoxPos.width = box.width;
+                newBoxPos.right = parent.right - mouse.rightX - parent.edge.left;
+            }
 
 
             if ( newBoxPos.right <= 0) {
                 target.deltaX = HANDLE_WIDTH - (parent.right -parent.edge.right- mouse.x);
 
-                // Set the new value. Remember that the new position is the left side of the parent
-                newBoxPos.right = 0;
-                outerMouse.x = mouse.x +(HANDLE_WIDTH - target.deltaX);
-                box.width = outerMouse.x - jBox.offset().left;
-                newBoxPos.width = box.width;
+                setRight();
             }
+
+
 
 
             if( newBoxPos.left < newBoxPos.right){
@@ -325,12 +337,12 @@ still works */
                 newBoxPos.left = ""
             }
 
-            // if( newBoxPos.top < newBoxPos.bottom){
-            //     newBoxPos.bottom = ""
-            // }
-            // else {
-            //     newBoxPos.top = ""
-            // }
+            if( newBoxPos.top < newBoxPos.bottom){
+                newBoxPos.bottom = ""
+            }
+            else {
+                newBoxPos.top = ""
+            }
 
             jBox.css( newBoxPos );
             var innerBox = jParent.find(".manipulable");
@@ -371,22 +383,73 @@ still works */
             event.stopPropagation();
         };
 
+        var handleNames = ["e", "w", "n", "s", "ne", "nw", "se", "sw"],
+            handleColors = {
+                "e": "red",
+                "w": "green",
+                "n": "blue",
+                "s" : "magenta",
+                "ne" : "cyan",
+                "nw" : "cyan",
+                "se" : "cyan",
+                "sw" : "cyan"
+            }
+            handleStyles = {};
 
+        $.each(handleNames, function(index, direction) {
+            handleStyles[direction] = {
+                "position":"absolute",
+                "background-color":handleColors[direction],
+                "margin":"0px",
+                "padding":"0px",
+                "height": direction === 'e' || direction === 'w'
+                            ? boxWrapper.outerHeight()- 2*HANDLE_WIDTH + "px"
+                            : HANDLE_WIDTH + "px",
+                "width": direction === 'n' || direction === 's'
+                            ? boxWrapper.outerHeight()- 2*HANDLE_WIDTH + "px"
+                            : HANDLE_WIDTH + "px",
+                "cursor": direction + "-resize"
+            };
 
-        boxWrapper.append(
-            $("<div>")
-                .css(handleStyles)
-                .css({
-                    "width": HANDLE_WIDTH +"px",
-                    "height": boxWrapper.outerHeight()- 2*HANDLE_WIDTH + "px",
-                    "right": "0px",
-                    "top": HANDLE_WIDTH + "px",
-                    "cursor":"e-resize",
-                })
-                .mousedown( function ( event ) { 
-                    handleClick( event, this, "e");
-                })
-        );
+            // top/bottom positioning 
+            // west/east need top HANDLE_WIDTH+"px"
+            if (direction === "e" || direction === "w") {
+                handleStyles[direction]["top"] = HANDLE_WIDTH + "px";
+            }
+            // North ones need to have a top of 0. This includes corners
+            else if(direction.indexOf("n") !== -1) {
+                handleStyles[direction]["top"] = "0px";
+            }
+            // South ones need to have a bottom of 0. This includes corners
+            else {
+                handleStyles[direction]["bottom"] = "0px";
+            }
+
+            // left-right positioning 
+            // north/south need left HANDLE_WIDTH+"px"
+            if (direction === "n" || direction === "s") {
+                handleStyles[direction]["left"] = HANDLE_WIDTH + "px";
+            }
+            // west ones need to have a left of 0. This includes corners
+            else if(direction.indexOf("w") !== -1) {
+                handleStyles[direction]["left"] = "0px";
+            }
+            // east ones need to have a right of 0. This includes corners
+            else {
+                handleStyles[direction]["right"] = "0px";
+            }
+
+        });
+
+        $.each(handleStyles, function (direction, styles) {
+            boxWrapper.append(
+                $("<div>")
+                    .css(styles)
+                    .mousedown( function ( event ) { 
+                        handleClick( event, this, direction);
+                    })
+            );
+        });
 
         return this;
     };
