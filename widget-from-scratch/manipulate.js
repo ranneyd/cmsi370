@@ -268,11 +268,12 @@ still works */
         /* Resizing */
 
         var trackResize = function ( target, handle){
+            console.log("tracking");
 
             // Takes in parameter handle and direction and returns true if that handle touches that
             // direction. I know, it's a simple helper function but it's useful.
             var touches = function ( direction ){
-                return handleDirection.indexOf(direction) !== -1;
+                return handle.indexOf(direction) !== -1;
             }
 
 
@@ -286,38 +287,65 @@ still works */
 
                 mouse = {
                     "x": mouse.x,
-                    "leftX": mouse.x - target.deltaX,
-                    "rightX": mouse.x + (HANDLE_WIDTH - target.deltaX),
                     "y": mouse.y,
-                    "topY": mouse.y - target.deltaY,
-                    "bottomY": mouse.y + (HANDLE_WIDTH - target.deltaY),
-                }
-
-                box = {
-                    "width": touches( "e" ) || touches( "w" )
-                                ? mouse.rightX - jBox.offset().left
-                                : jBox.outerWidth(),
-                    "height": touches( "n" ) || touches( "s" )
-                                ? mouse.outerY - jBox.offset().top
-                                : jBox.outerHeight()
                 },
 
+                /* I was using jBox.offset() but it turns out this gets a little weird when you
+                /* switch from left to right */
+                
+                box = {
+                    "left" : parseInt(jBox.css("left")),
+                    "right" : parseInt(jBox.css("right")),
+                    "top" : parseInt(jBox.css("top")),
+                    "bottom" : parseInt(jBox.css("bottom")),
+                    "width" : jBox.width(),
+                    "height" : jBox.height()
+                },
                 newBoxPos = {
-                    "left": touches( "w" )
-                            ? mouse.
-                            : jBox.offset().left - parent.left - parent.edge.left,
-                    "top":  jBox.offset().top - parent.top - parent.edge.top,
-                    "right": parent.right - mouse.rightX - parent.edge.left,
-                    "bottom": parent.bottom - mouse.rightX - parent.edge.top,
-                    "width":box.width,
-                    "height":box.height
+                    "left": box.left ? box.left : parent.width - box.right - box.width,
+                    "right": box.right ? box.right : parent.width - box.left - box.width,
+                    "top": box.top ? box.top : parent.height - box.bottom - box.height,
+                    "bottom": box.bottom ? box.bottom : parent.height - box.top - box.height,
+                    "width": box.width,
+                    "height": box.height
                 };
 
-            var setRight = function(){
+            var setLeft = function(){
+                mouse.leftX = mouse.x - target.deltaX;
+                box.width = jBox.offset().left - mouse.leftX + jBox.width();
+                newBoxPos.width = box.width;
+                newBoxPos.left = mouse.leftX - parent.left - parent.edge.left;
+            },
+            setRight = function(){
                 mouse.rightX = mouse.x +(HANDLE_WIDTH - target.deltaX);
                 box.width = mouse.rightX - jBox.offset().left;
                 newBoxPos.width = box.width;
                 newBoxPos.right = parent.right - mouse.rightX - parent.edge.left;
+            },
+            setTop = function(){
+                mouse.rightX = mouse.x +(HANDLE_WIDTH - target.deltaX);
+                box.width = mouse.rightX - jBox.offset().left;
+                newBoxPos.width = box.width;
+                newBoxPos.right = parent.right - mouse.rightX - parent.edge.left;
+            },
+            setBottom = function(){
+                mouse.rightX = mouse.x +(HANDLE_WIDTH - target.deltaX);
+                box.width = mouse.rightX - jBox.offset().left;
+                newBoxPos.width = box.width;
+                newBoxPos.right = parent.right - mouse.rightX - parent.edge.left;
+            };
+
+            if(touches("w")){
+                setLeft();
+            }
+            if(touches("e")){
+                setRight();
+            }
+            if(touches("n")){
+                setTop();
+            }
+            if(touches("s")){
+                setBottom();
             }
 
 
@@ -346,6 +374,7 @@ still works */
 
             jBox.css( newBoxPos );
             var innerBox = jParent.find(".manipulable");
+            console.log(box.width);
             innerBox.outerWidth(box.width);
             innerBox.outerHeight(box.height);
 
@@ -370,7 +399,7 @@ still works */
             target.deltaY = mouse.y - startOffset.top;
 
             
-            trackResize( target, direction);
+            trackResize( target, direction );
 
 
             var mouseUpFunction = function ( event ) {
@@ -445,6 +474,7 @@ still works */
             boxWrapper.append(
                 $("<div>")
                     .css(styles)
+                    .addClass(direction + "-handle")
                     .mousedown( function ( event ) { 
                         handleClick( event, this, direction);
                     })
