@@ -10,6 +10,9 @@
 /* NOTE: if position of object isn't set before-hand, they will automatically be set to left: 0 and
 /* top: 0*/
 
+
+/* TODO: ghost div in case of iframe inside. */
+
 /* This allows us to not only have a closure but if they have $ aliased as something not jQuery it
 still works */
 (function ( $ ) {
