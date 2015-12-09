@@ -1,7 +1,8 @@
-/* This allows us to not only have a closure but if they have $ aliased as something not jQuery it
-still works */
-
 /* CAUTION: Requires jQuery 1.8 or later */
+
+/* CAUTION: If the parent element is the body tag, this will not work unless you set
+/* "height:100%". CSS is pretty dumb and if this isn't set explicitly the body could have a
+/* height of 0px or something equally silly and the object will not be able to move properly. */
 
 /* Known issue: If the parent element is sized using percents, then some of the calculations will
 /* produce non-integer results that have undefined behavior */
@@ -9,6 +10,8 @@ still works */
 /* NOTE: if position of object isn't set before-hand, they will automatically be set to left: 0 and
 /* top: 0*/
 
+/* This allows us to not only have a closure but if they have $ aliased as something not jQuery it
+still works */
 (function ( $ ) {
 
     const HANDLE_WIDTH = 10;
@@ -37,10 +40,6 @@ still works */
     /* Make an object draggable and resizable. The callback will be invoked every time an object is
     /* moved or resized. The object will not be able to be positioned or sized in such a way that
     /* any part of it is outside the parent element.
-
-    /* CAUTION: If the parent element is the body tag, this will not work unless you set
-    /* "height:100%". CSS is pretty dumb and if this isn't set explicitly the body could have a
-    /* height of 0px or something equally silly and the object will not be able to move properly. */
 
     /* TODO: explain left vs right and what we pass to the callback */
 
@@ -83,7 +82,7 @@ still works */
             .addClass("manipulable");
 
 
-        // Returns 
+        // Returns relevant positioning and sizing information about the parent element
         var parentStats = function( jParent ) {
             return {
                     "left": jParent.offset().left,
@@ -109,6 +108,18 @@ still works */
                                 +  parseInt(jParent.css("border-bottom-width"),10),
                     }
                 };
+        };
+
+        // Returns information to be sent to the callback
+        var callbackProps = function (newBoxPos) {
+            return {
+                "left": newBoxPos.left,
+                "right": newBoxPos.right,
+                "top": newBoxPos.top,
+                "bottom": newBoxPos.bottom,
+                "leftSide": newBoxPos.left < newBoxPos.right,
+                "topSide": newBoxPos.top < newBoxPos.bottom
+            }
         };
 
         /* Why not mousemove? */
@@ -191,15 +202,6 @@ still works */
             }
 
 
-            var callbackProps = {
-                "left": newBoxPos.left,
-                "right": newBoxPos.right,
-                "top": newBoxPos.top,
-                "bottom": newBoxPos.bottom,
-                "leftSide": newBoxPos.left < newBoxPos.right,
-                "topSide": newBoxPos.top < newBoxPos.bottom
-            };
-
             if( newBoxPos.left < newBoxPos.right){
                 newBoxPos.right = ""
             }
@@ -217,7 +219,7 @@ still works */
             jThis.css( newBoxPos );
 
             if ( callback ) {
-                callback(target, callbackProps );
+                callback(target, callbackProps( newBoxPos ) );
             }
 
             if ( target.move ) {
@@ -414,6 +416,10 @@ still works */
             innerBox.outerWidth(box.width);
             innerBox.outerHeight(box.height);
 
+
+            if ( callback ) {
+                callback(jBox, callbackProps( newBoxPos ) );
+            }
 
 
             if ( target.resize ) {
