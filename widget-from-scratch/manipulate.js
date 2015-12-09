@@ -6,6 +6,9 @@ still works */
 /* Known issue: If the parent element is sized using percents, then some of the calculations will
 /* produce non-integer results that have undefined behavior */
 
+/* NOTE: if position of object isn't set before-hand, they will automatically be set to left: 0 and
+/* top: 0*/
+
 (function ( $ ) {
 
     const HANDLE_WIDTH = 10;
@@ -62,10 +65,10 @@ still works */
             "user-select": "none",
             "width": this.outerWidth(),
             "height": this.outerHeight(),
-            "left": this.css("left"),
-            "right": this.css("right"),
-            "top": this.css("top"),
-            "bottom": this.css("bottom"),
+            "left": this.css("left") === "auto" ? "0px" : this.css("left"),
+            "right": this.css("right") === "auto" ? "" : this.css("right"),
+            "top": this.css("top") === "auto" ? "0px" : this.css("top"),
+            "bottom": this.css("bottom") === "auto" ? "" : this.css("bottom"),
             "padding":"0px",
             "margin":"0px"
         } );
@@ -87,6 +90,8 @@ still works */
                     "top": jParent.offset().top,
                     "width": jParent.outerWidth(),
                     "height": jParent.outerHeight(),
+                    "innerWidth": jParent.innerWidth(),
+                    "innerHeight": jParent.innerHeight(),
                     "right": jParent.offset().left + jParent.outerWidth(),
                     "bottom": jParent.offset().top + jParent.outerHeight(),
                     "edge": {
@@ -268,7 +273,6 @@ still works */
         /* Resizing */
 
         var trackResize = function ( target, handle){
-            console.log("tracking");
 
             // Takes in parameter handle and direction and returns true if that handle touches that
             // direction. I know, it's a simple helper function but it's useful.
@@ -302,37 +306,55 @@ still works */
                     "height" : jBox.height()
                 },
                 newBoxPos = {
-                    "left": box.left ? box.left : parent.width - box.right - box.width,
-                    "right": box.right ? box.right : parent.width - box.left - box.width,
-                    "top": box.top ? box.top : parent.height - box.bottom - box.height,
-                    "bottom": box.bottom ? box.bottom : parent.height - box.top - box.height,
+                    "left": box.left ? box.left : parent.innerWidth - box.right - box.width,
+                    "right": box.right ? box.right : parent.innerWidth - box.left - box.width,
+                    "top": box.top ? box.top : parent.innerHeight - box.bottom - box.height,
+                    "bottom": box.bottom ? box.bottom : parent.innerHeight - box.top - box.height,
                     "width": box.width,
                     "height": box.height
                 };
 
+            var fixVerticalHandles = function () {
+                jBox.find(".w-handle").outerHeight(newBoxPos.height - HANDLE_WIDTH * 2);
+                jBox.find(".e-handle").outerHeight(newBoxPos.height - HANDLE_WIDTH * 2);
+            },
+            fixHorizontalHandles = function () {
+                jBox.find(".n-handle").outerWidth(newBoxPos.width - HANDLE_WIDTH * 2);
+                jBox.find(".s-handle").outerWidth(newBoxPos.width - HANDLE_WIDTH * 2);
+            };
+
+
             var setLeft = function(){
                 mouse.leftX = mouse.x - target.deltaX;
-                box.width = jBox.offset().left - mouse.leftX + jBox.width();
+                box.width = newBoxPos.left + parent.left + parent.edge.left - mouse.leftX + box.width;
                 newBoxPos.width = box.width;
                 newBoxPos.left = mouse.leftX - parent.left - parent.edge.left;
+
+                fixHorizontalHandles();
             },
             setRight = function(){
                 mouse.rightX = mouse.x +(HANDLE_WIDTH - target.deltaX);
                 box.width = mouse.rightX - jBox.offset().left;
                 newBoxPos.width = box.width;
                 newBoxPos.right = parent.right - mouse.rightX - parent.edge.left;
+
+                fixHorizontalHandles();
             },
             setTop = function(){
-                mouse.rightX = mouse.x +(HANDLE_WIDTH - target.deltaX);
-                box.width = mouse.rightX - jBox.offset().left;
-                newBoxPos.width = box.width;
-                newBoxPos.right = parent.right - mouse.rightX - parent.edge.left;
+                mouse.topY = mouse.y - target.deltaY;
+                box.height = jBox.offset().top - mouse.topY + box.height;
+                newBoxPos.height = box.height;
+                newBoxPos.top = mouse.topY - parent.top - parent.edge.top;
+
+                fixVerticalHandles();
             },
             setBottom = function(){
-                mouse.rightX = mouse.x +(HANDLE_WIDTH - target.deltaX);
-                box.width = mouse.rightX - jBox.offset().left;
-                newBoxPos.width = box.width;
-                newBoxPos.right = parent.right - mouse.rightX - parent.edge.left;
+                mouse.bottomY = mouse.y +(HANDLE_WIDTH - target.deltaY);
+                box.height = mouse.bottomY - jBox.offset().top;
+                newBoxPos.height = box.height;
+                newBoxPos.bottom = parent.bottom - mouse.bottomY - parent.edge.top;
+
+                fixVerticalHandles();
             };
 
             if(touches("w")){
@@ -348,11 +370,27 @@ still works */
                 setBottom();
             }
 
+            // TODO: minimum width
 
+            if ( newBoxPos.left <= 0) {
+                target.deltaX = mouse.x - parent.edge.left - parent.left;
+
+                setLeft();
+            }
             if ( newBoxPos.right <= 0) {
                 target.deltaX = HANDLE_WIDTH - (parent.right -parent.edge.right- mouse.x);
 
                 setRight();
+            }
+            if ( newBoxPos.top <= 0) {
+                target.deltaY = mouse.y - parent.edge.top - parent.top;
+
+                setTop();
+            }
+            if ( newBoxPos.bottom <= 0) {
+                target.deltaY = HANDLE_WIDTH - (parent.bottom -parent.edge.bottom- mouse.y);
+
+                setBottom();
             }
 
 
@@ -374,7 +412,6 @@ still works */
 
             jBox.css( newBoxPos );
             var innerBox = jParent.find(".manipulable");
-            console.log(box.width);
             innerBox.outerWidth(box.width);
             innerBox.outerHeight(box.height);
 
