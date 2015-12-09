@@ -323,7 +323,8 @@ still works */
                 jBox.find(".s-handle").outerWidth(newBoxPos.width - HANDLE_WIDTH * 2);
             };
 
-
+            // It's possible that newBoxPos.left and .top get freaked out when box.left is 0px
+            // because the if statement evaluates to false. Investigate further later
             var setLeft = function(){
                 mouse.leftX = mouse.x - target.deltaX;
                 box.width = newBoxPos.left + parent.left + parent.edge.left - mouse.leftX + box.width;
@@ -334,7 +335,7 @@ still works */
             },
             setRight = function(){
                 mouse.rightX = mouse.x +(HANDLE_WIDTH - target.deltaX);
-                box.width = mouse.rightX - jBox.offset().left;
+                box.width = mouse.rightX - (newBoxPos.left + parent.left + parent.edge.left);
                 newBoxPos.width = box.width;
                 newBoxPos.right = parent.right - mouse.rightX - parent.edge.left;
 
@@ -342,7 +343,7 @@ still works */
             },
             setTop = function(){
                 mouse.topY = mouse.y - target.deltaY;
-                box.height = jBox.offset().top - mouse.topY + box.height;
+                box.height = newBoxPos.top + parent.top + parent.edge.top0 - mouse.topY + box.height;
                 newBoxPos.height = box.height;
                 newBoxPos.top = mouse.topY - parent.top - parent.edge.top;
 
