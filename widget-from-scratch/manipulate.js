@@ -343,7 +343,7 @@ still works */
             },
             setTop = function(){
                 mouse.topY = mouse.y - target.deltaY;
-                box.height = newBoxPos.top + parent.top + parent.edge.top0 - mouse.topY + box.height;
+                box.height = newBoxPos.top + parent.top + parent.edge.top - mouse.topY + box.height;
                 newBoxPos.height = box.height;
                 newBoxPos.top = mouse.topY - parent.top - parent.edge.top;
 
