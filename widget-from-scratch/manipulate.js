@@ -306,10 +306,10 @@ still works */
                     "height" : jBox.height()
                 },
                 newBoxPos = {
-                    "left": box.left ? box.left : parent.innerWidth - box.right - box.width,
-                    "right": box.right ? box.right : parent.innerWidth - box.left - box.width,
-                    "top": box.top ? box.top : parent.innerHeight - box.bottom - box.height,
-                    "bottom": box.bottom ? box.bottom : parent.innerHeight - box.top - box.height,
+                    "left": isNaN(box.left) ? parent.innerWidth - box.right - box.width : box.left,
+                    "right": isNaN(box.right) ? parent.innerWidth - box.left - box.width : box.right,
+                    "top": isNaN(box.top) ? parent.innerHeight - box.bottom - box.height : box.top,
+                    "bottom": isNaN(box.bottom) ? parent.innerHeight - box.top - box.height : box.bottom,
                     "width": box.width,
                     "height": box.height
                 };
@@ -323,8 +323,6 @@ still works */
                 jBox.find(".s-handle").outerWidth(newBoxPos.width - HANDLE_WIDTH * 2);
             };
 
-            // It's possible that newBoxPos.left and .top get freaked out when box.left is 0px
-            // because the if statement evaluates to false. Investigate further later
             var setLeft = function(){
                 mouse.leftX = mouse.x - target.deltaX;
                 box.width = newBoxPos.left + parent.left + parent.edge.left - mouse.leftX + box.width;
