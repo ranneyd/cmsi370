@@ -59,7 +59,6 @@ still works */
             "position":"absolute",
             // don't want object to be highlightable. Browser support a little spotty so we need a
             // few styles to cover all of them
-            "-webkit-touch-callout": "none",
             "-webkit-user-select": "none",
             "khtml-user-select": "none",
             "-moz-user-select": "none",
@@ -150,6 +149,7 @@ still works */
                     "bottom": parent.bottom - parent.edge.bottom - mouse.y - (box.height - target.deltaY),
                 };
 
+            //console.log(newBoxPos, mouse.x, target.deltaX, parent.left, parent.edge.left);
             // check left side. Remember it cannot leave the parent.
             if ( newBoxPos.left <= 0) {
                 
@@ -157,7 +157,7 @@ still works */
                 // parent. So the global mouse position with respect to the parent tells us the new
                 // offset from the object
 
-                target.deltaX = mouse.x - parent.left;
+                target.deltaX = mouse.x - parent.left - parent.edge.left;
 
                 // Set the new value. Remember that the new position is the left side of the parent
                 newBoxPos.left = 0;
@@ -181,7 +181,7 @@ still works */
                 /* of the child (since the child will be all the way up against the right side).
                 /* Then we get the following */
 
-                target.deltaX = mouse.x - (parent.right - box.width);
+                target.deltaX = mouse.x - parent.left - parent.edge.left - (parent.innerWidth - box.width);
 
                 // Set the new value. Remember that the new position is the left side of the parent
                 newBoxPos.right = 0;
@@ -191,7 +191,7 @@ still works */
             // check top side. This is basically the same as the check for the left side but in
             // y instead of x
             if ( newBoxPos.top <= 0) {
-                target.deltaY = mouse.y - parent.top;
+                target.deltaY = mouse.y - parent.top - parent.edge.top;
 
                 newBoxPos.top = 0;
             }
@@ -199,11 +199,14 @@ still works */
             // check bottom side. This is basically the same as the check for the right side but in
             // y instead of x
             if ( newBoxPos.bottom <= 0) {
-                target.deltaY = mouse.y - (parent.bottom - box.height);
+                target.deltaY = mouse.y - parent.top - parent.edge.top - (parent.innerHeight - box.height);
 
                 newBoxPos.bottom = 0;
             }
 
+            if ( callback ) {
+                callback(target, callbackProps( newBoxPos ) );
+            }
 
             if( newBoxPos.left < newBoxPos.right){
                 newBoxPos.right = ""
@@ -221,9 +224,6 @@ still works */
 
             jThis.css( newBoxPos );
 
-            if ( callback ) {
-                callback(target, callbackProps( newBoxPos ) );
-            }
 
             if ( target.move ) {
                 window.requestAnimationFrame( function () {
@@ -376,28 +376,30 @@ still works */
 
             // TODO: minimum width
 
-            if ( newBoxPos.left <= 0) {
+            if ( newBoxPos.left <= 0 && touches ("w") ) {
                 target.deltaX = mouse.x - parent.edge.left - parent.left;
 
                 setLeft();
             }
-            if ( newBoxPos.right <= 0) {
+            if ( newBoxPos.right <= 0 && touches ("e")) {
                 target.deltaX = HANDLE_WIDTH - (parent.right -parent.edge.right- mouse.x);
 
                 setRight();
             }
-            if ( newBoxPos.top <= 0) {
+            if ( newBoxPos.top <= 0 && touches ("n")) {
                 target.deltaY = mouse.y - parent.edge.top - parent.top;
 
                 setTop();
             }
-            if ( newBoxPos.bottom <= 0) {
+            if ( newBoxPos.bottom <= 0 && touches ("s")) {
                 target.deltaY = HANDLE_WIDTH - (parent.bottom -parent.edge.bottom- mouse.y);
 
                 setBottom();
             }
 
-
+            if ( callback ) {
+                callback(jBox, callbackProps( newBoxPos ) );
+            }
 
 
             if( newBoxPos.left < newBoxPos.right){
@@ -419,10 +421,6 @@ still works */
             innerBox.outerWidth(box.width);
             innerBox.outerHeight(box.height);
 
-
-            if ( callback ) {
-                callback(jBox, callbackProps( newBoxPos ) );
-            }
 
 
             if ( target.resize ) {
