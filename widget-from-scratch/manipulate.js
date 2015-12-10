@@ -46,6 +46,7 @@ still works */
 
     /* TODO: explain left vs right and what we pass to the callback */
 
+    /* TODO: Explain what debug means */ 
     $.fn.manipulate = function ( callback, debug ) {
 
         var boxWrapper = this.wrap("<div></div>").parent(),
@@ -94,30 +95,38 @@ still works */
 
         // Returns relevant positioning and sizing information about the parent element
         var parentStats = function( jParent ) {
-            return {
-                    "left": jParent.offset().left,
-                    "top": jParent.offset().top,
-                    "width": jParent.outerWidth(),
-                    "height": jParent.outerHeight(),
-                    "innerWidth": jParent.innerWidth(),
-                    "innerHeight": jParent.innerHeight(),
-                    "right": jParent.offset().left + jParent.outerWidth(),
-                    "bottom": jParent.offset().top + jParent.outerHeight(),
-                    "edge": {
-                        "left": parseInt(jParent.css("margin-left"),10) 
-                                + parseInt(jParent.css("padding-left"),10)
-                                +  parseInt(jParent.css("border-left-width"),10),
-                        "right": parseInt(jParent.css("margin-right"),10) 
-                                + parseInt(jParent.css("padding-right"),10)
-                                +  parseInt(jParent.css("border-right-width"),10),
-                        "top": parseInt(jParent.css("margin-top"),10) 
-                                + parseInt(jParent.css("padding-top"),10)
-                                +  parseInt(jParent.css("border-top-width"),10),
-                        "bottom": parseInt(jParent.css("margin-bottom"),10) 
-                                + parseInt(jParent.css("padding-bottom"),10)
-                                +  parseInt(jParent.css("border-bottom-width"),10),
-                    }
-                };
+            var parent = {
+                "left": jParent.offset().left,
+                "top": jParent.offset().top,
+                "width": jParent.outerWidth(),
+                "height": jParent.outerHeight(),
+                "innerWidth": jParent.innerWidth(),
+                "innerHeight": jParent.innerHeight(),
+                "right": jParent.offset().left + jParent.outerWidth(),
+                "bottom": jParent.offset().top + jParent.outerHeight(),
+                "edge": {
+                    // 10 means we're parsing an int in base 10. parseInt ignores "px"
+                    "left": parseInt(jParent.css("margin-left"),10) 
+                            + parseInt(jParent.css("padding-left"),10)
+                            +  parseInt(jParent.css("border-left-width"),10),
+                    "right": parseInt(jParent.css("margin-right"),10) 
+                            + parseInt(jParent.css("padding-right"),10)
+                            +  parseInt(jParent.css("border-right-width"),10),
+                    "top": parseInt(jParent.css("margin-top"),10) 
+                            + parseInt(jParent.css("padding-top"),10)
+                            +  parseInt(jParent.css("border-top-width"),10),
+                    "bottom": parseInt(jParent.css("margin-bottom"),10) 
+                            + parseInt(jParent.css("padding-bottom"),10)
+                            +  parseInt(jParent.css("border-bottom-width"),10),
+                }
+            };
+
+            parent.innerLeft = parent.left + parent.edge.left;
+            parent.innerRight = parent.right - parent.edge.right;
+            parent.innerTop = parent.top + parent.edge.top;
+            parent.innerBottom = parent.bottom - parent.edge.bottom;
+
+            return parent;
         };
 
         // Returns information to be sent to the callback
@@ -131,6 +140,23 @@ still works */
                 "topSide": newBoxPos.top < newBoxPos.bottom
             }
         };
+
+        // Takes in left/right top/bottom values and sets the lesser of each pair to ""
+        var oneSidify = function ( newBoxPos ){
+            if( newBoxPos.left < newBoxPos.right){
+                newBoxPos.right = ""
+            }
+            else {
+                newBoxPos.left = ""
+            }
+
+            if( newBoxPos.top < newBoxPos.bottom){
+                newBoxPos.bottom = ""
+            }
+            else {
+                newBoxPos.top = ""
+            }
+        }
 
         /* Why not mousemove? */
 
@@ -151,13 +177,12 @@ still works */
                 },
 
                 newBoxPos = {
-                    "left": mouse.x - target.deltaX - parent.left - parent.edge.left,
-                    "top":  mouse.y - target.deltaY - parent.top - parent.edge.top,
-                    "right": parent.right - parent.edge.right - mouse.x - (box.width - target.deltaX),
-                    "bottom": parent.bottom - parent.edge.bottom - mouse.y - (box.height - target.deltaY),
+                    "left": mouse.x - target.deltaX - parent.innerLeft,
+                    "top":  mouse.y - target.deltaY - parent.innerTop,
+                    "right": parent.innerRight - mouse.x - (box.width - target.deltaX),
+                    "bottom": parent.innerBottom - mouse.y - (box.height - target.deltaY),
                 };
 
-            //console.log(newBoxPos, mouse.x, target.deltaX, parent.left, parent.edge.left);
             // check left side. Remember it cannot leave the parent.
             if ( newBoxPos.left <= 0) {
                 
@@ -165,7 +190,7 @@ still works */
                 // parent. So the global mouse position with respect to the parent tells us the new
                 // offset from the object
 
-                target.deltaX = mouse.x - parent.left - parent.edge.left;
+                target.deltaX = mouse.x - parent.innerLeft;
 
                 // Set the new value. Remember that the new position is the left side of the parent
                 newBoxPos.left = 0;
@@ -185,11 +210,11 @@ still works */
                 /* 
                 /* If this outer box is the window, and the box within it is the parent, and the []
                 /* inside is the manipulatable object, then the deltaX will be the mouse.x minus (a
-                /* + b). To get b, however, we need to take the width of the parent minus the width
-                /* of the child (since the child will be all the way up against the right side).
-                /* Then we get the following */
+                /* + left border width + b). To get b, however, we need to take the width of the
+                /* parent minus the width of the child (since the child will be all the way up
+                /* against the right side). Then we get the following */
 
-                target.deltaX = mouse.x - parent.left - parent.edge.left - (parent.innerWidth - box.width);
+                target.deltaX = mouse.x - parent.innerLeft - (parent.innerWidth - box.width);
 
                 // Set the new value. Remember that the new position is the left side of the parent
                 newBoxPos.right = 0;
@@ -199,7 +224,7 @@ still works */
             // check top side. This is basically the same as the check for the left side but in
             // y instead of x
             if ( newBoxPos.top <= 0) {
-                target.deltaY = mouse.y - parent.top - parent.edge.top;
+                target.deltaY = mouse.y - parent.innerTop;
 
                 newBoxPos.top = 0;
             }
@@ -207,31 +232,19 @@ still works */
             // check bottom side. This is basically the same as the check for the right side but in
             // y instead of x
             if ( newBoxPos.bottom <= 0) {
-                target.deltaY = mouse.y - parent.top - parent.edge.top - (parent.innerHeight - box.height);
+                target.deltaY = mouse.y - parent.innerTop - (parent.innerHeight - box.height);
 
                 newBoxPos.bottom = 0;
             }
+
+
 
             if ( callback ) {
                 callback(target, callbackProps( newBoxPos ) );
             }
 
-            if( newBoxPos.left < newBoxPos.right){
-                newBoxPos.right = ""
-            }
-            else {
-                newBoxPos.left = ""
-            }
-
-            if( newBoxPos.top < newBoxPos.bottom){
-                newBoxPos.bottom = ""
-            }
-            else {
-                newBoxPos.top = ""
-            }
-
+            oneSidify(newBoxPos);
             jThis.css( newBoxPos );
-
 
             if ( target.move ) {
                 window.requestAnimationFrame( function () {
@@ -253,6 +266,7 @@ still works */
                 mouse = $.fn.manipulate.mouse;
 
 
+            // This is what will keep the trackMouse loop going
             this.move = true;
 
             // We need to know the distance between the place they click and the upper left-hand
@@ -290,8 +304,8 @@ still works */
 
         var trackResize = function ( target, handle){
 
-            // Takes in parameter handle and direction and returns true if that handle touches that
-            // direction. I know, it's a simple helper function but it's useful.
+            // Takes in parameter direction and returns true if that handle faces that direction.
+            // I know, it's a simple helper function but it's useful.
             var touches = function ( direction ){
                 return handle.indexOf(direction) !== -1;
             }
@@ -305,13 +319,12 @@ still works */
 
                 mouse = $.fn.manipulate.mouse,
 
-                mouse = {
-                    "x": mouse.x,
-                    "y": mouse.y,
-                },
-
-                /* I was using jBox.offset() but it turns out this gets a little weird when you
-                /* switch from left to right */
+                /* I was using jBox.offset() but it turns out this gets very buggy when I switch
+                /* from left to right coordinates. I went with this, a little more convoluted but
+                /* bug-free alternative. Since we take the starting position of the element when we
+                /* start the plugin and set defaults if there are none set, we can assume there will
+                /* be values in at least left or right and top or bottom. So we take whichever one
+                /* is there and extrapolate the other one from that */
                 
                 box = {
                     "left" : parseInt(jBox.css("left")),
@@ -321,11 +334,25 @@ still works */
                     "width" : jBox.width(),
                     "height" : jBox.height()
                 },
+
+                /* If any of the above were not set, we'll get NaN. However, we can assume that one
+                /* of left or right and one of top and bottom will be set. So we use the one that's
+                /* set and for the other we extrapolate using the width of the parent, the width of
+                /* the box, and the other given position */
+
                 newBoxPos = {
-                    "left": isNaN(box.left) ? parent.innerWidth - box.right - box.width : box.left,
-                    "right": isNaN(box.right) ? parent.innerWidth - box.left - box.width : box.right,
-                    "top": isNaN(box.top) ? parent.innerHeight - box.bottom - box.height : box.top,
-                    "bottom": isNaN(box.bottom) ? parent.innerHeight - box.top - box.height : box.bottom,
+                    "left": isNaN(box.left) 
+                                ? parent.innerWidth - box.right - box.width 
+                                : box.left,
+                    "right": isNaN(box.right) 
+                                ? parent.innerWidth - box.left - box.width 
+                                : box.right,
+                    "top": isNaN(box.top) 
+                                ? parent.innerHeight - box.bottom - box.height 
+                                : box.top,
+                    "bottom": isNaN(box.bottom) 
+                                ? parent.innerHeight - box.top - box.height 
+                                : box.bottom,
                     "width": box.width,
                     "height": box.height
                 };
@@ -340,37 +367,51 @@ still works */
             };
 
             var setLeft = function(){
-                mouse.leftX = mouse.x - target.deltaX;
-                box.width = newBoxPos.left + parent.left + parent.edge.left - mouse.leftX + box.width;
+                // Note that this is relative to page, not parent
+                var newLeftOffest = mouse.x - target.deltaX;
+                
+                /* This ends up being a little tricky. To find the new width, we have to find the
+                /* difference between where the new left position and old left position are based on
+                /* the mouse. The new width will be that difference plus the width of the box*/
+
+                box.width = newBoxPos.left + parent.innerLeft - newLeftOffest + box.width;
                 newBoxPos.width = box.width;
-                newBoxPos.left = mouse.leftX - parent.left - parent.edge.left;
+                newBoxPos.left = newLeftOffest - parent.innerLeft;
 
                 fixHorizontalHandles();
             },
             setRight = function(){
-                mouse.rightX = mouse.x +(HANDLE_WIDTH - target.deltaX);
-                box.width = mouse.rightX - (newBoxPos.left + parent.left + parent.edge.left);
+                // Note that this is relative to the left side of the page, not the right side
+                var newRightOffset = mouse.x +(HANDLE_WIDTH - target.deltaX);
+
+                /* This ends up being more straightforward than the left. Here we just take the new
+                /* right offset and subtract the old left and parent left */
+
+                box.width = newRightOffset - (newBoxPos.left + parent.innerLeft);
                 newBoxPos.width = box.width;
-                newBoxPos.right = parent.right - mouse.rightX - parent.edge.left;
+                newBoxPos.right = parent.innerRight - newRightOffset;
 
                 fixHorizontalHandles();
             },
             setTop = function(){
-                mouse.topY = mouse.y - target.deltaY;
-                box.height = newBoxPos.top + parent.top + parent.edge.top - mouse.topY + box.height;
+                var newTopOffset = mouse.y - target.deltaY;
+                box.height = newBoxPos.top + parent.innerTop - newTopOffset + box.height;
                 newBoxPos.height = box.height;
-                newBoxPos.top = mouse.topY - parent.top - parent.edge.top;
+                newBoxPos.top = newTopOffset - parent.innerTop;
 
                 fixVerticalHandles();
             },
             setBottom = function(){
-                mouse.bottomY = mouse.y +(HANDLE_WIDTH - target.deltaY);
-                box.height = mouse.bottomY - jBox.offset().top;
+                var newBottomOffset = mouse.y +(HANDLE_WIDTH - target.deltaY);
+                box.height = newBottomOffset - jBox.offset().top;
                 newBoxPos.height = box.height;
-                newBoxPos.bottom = parent.bottom - mouse.bottomY - parent.edge.top;
+                newBoxPos.bottom = parent.innerBottom - newBottomOffset;
 
                 fixVerticalHandles();
             };
+
+            /* If our handle is one of each of those cases, change the appropriate side. I
+            /* deliberately did it this way so resizing via the corners would work automatically */
 
             if(touches("w")){
                 setLeft();
@@ -387,23 +428,30 @@ still works */
 
             // TODO: minimum width
 
+            /* This checks for walls to make sure we don't resize out of the parent. The &&
+            /* touches("_") is there because there were issues where the box was up against a wall
+            /* and being resized from the opposite side. Since these affect the deltaX it was
+            /* messing with the resizing. The && touches("_") insures that we are only checking for
+            /* walls when you are resizing in that same direction, since that's the only way you're
+            /* going to go over anyway*/
+
             if ( newBoxPos.left <= 0 && touches ("w") ) {
-                target.deltaX = mouse.x - parent.edge.left - parent.left;
+                target.deltaX = mouse.x - parent.innerLeft;
 
                 setLeft();
             }
             if ( newBoxPos.right <= 0 && touches ("e")) {
-                target.deltaX = HANDLE_WIDTH - (parent.right -parent.edge.right- mouse.x);
+                target.deltaX = HANDLE_WIDTH - (parent.innerRight - mouse.x);
 
                 setRight();
             }
             if ( newBoxPos.top <= 0 && touches ("n")) {
-                target.deltaY = mouse.y - parent.edge.top - parent.top;
+                target.deltaY = mouse.y - parent.innerTop;
 
                 setTop();
             }
             if ( newBoxPos.bottom <= 0 && touches ("s")) {
-                target.deltaY = HANDLE_WIDTH - (parent.bottom -parent.edge.bottom- mouse.y);
+                target.deltaY = HANDLE_WIDTH - (parent.innerBottom - mouse.y);
 
                 setBottom();
             }
@@ -413,26 +461,12 @@ still works */
             }
 
 
-            if( newBoxPos.left < newBoxPos.right){
-                newBoxPos.right = ""
-            }
-            else {
-                newBoxPos.left = ""
-            }
-
-            if( newBoxPos.top < newBoxPos.bottom){
-                newBoxPos.bottom = ""
-            }
-            else {
-                newBoxPos.top = ""
-            }
+            oneSidify(newBoxPos);
 
             jBox.css( newBoxPos );
             var innerBox = jParent.find(".manipulable");
             innerBox.outerWidth(box.width);
             innerBox.outerHeight(box.height);
-
-
 
             if ( target.resize ) {
                 window.requestAnimationFrame( function () {
@@ -468,11 +502,11 @@ still works */
             event.stopPropagation();
         };
 
-        var handleNames = ["e", "w", "n", "s", "ne", "nw", "se", "sw"],
+        var handleNames = ["n", "e", "w", "s", "ne", "nw", "se", "sw"],
             handleColors = {
+                "n": "blue",
                 "e": "red",
                 "w": "green",
-                "n": "blue",
                 "s" : "magenta",
                 "ne" : "cyan",
                 "nw" : "cyan",
