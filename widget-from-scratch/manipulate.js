@@ -46,9 +46,17 @@ still works */
 
     /* TODO: explain left vs right and what we pass to the callback */
 
-    $.fn.manipulate = function ( callback ) {
+    $.fn.manipulate = function ( callback, debug ) {
 
-        var boxWrapper = this.wrap("<div></div>").parent();
+        var boxWrapper = this.wrap("<div></div>").parent(),
+            blockerDiv = $("<div>").css({
+                "width": "100%",
+                "height": "100%",
+                "left":"0px",
+                "top":"0px",
+                "background-color": debug ? "yellow" : "",
+                "z-index":"100"
+            }).appendTo(boxWrapper).hide();
 
         /* DRAGGING */
 
@@ -255,6 +263,8 @@ still works */
             
             trackMouse(this);
 
+            blockerDiv.show();
+
             // When we mouse up we want to end the magic. There are also implications with the
             // bounds checking where the mouse can end up outside the object. No matter where you
             // mouse up, you should stop dragging. But since we're calling mouseup on the body it
@@ -266,6 +276,7 @@ still works */
 
             var mouseUpFunction = function ( event ) {
                 thisBox.move = false;
+                blockerDiv.hide();
                 $("body").unbind("mouseup", mouseUpFunction);
             };
 
@@ -443,10 +454,12 @@ still works */
 
             
             trackResize( target, direction );
-
+            
+            blockerDiv.show();
 
             var mouseUpFunction = function ( event ) {
                 target.resize = false;
+                blockerDiv.hide();
                 $("body").unbind("mouseup", mouseUpFunction);
             };
 
@@ -471,7 +484,7 @@ still works */
         $.each(handleNames, function(index, direction) {
             handleStyles[direction] = {
                 "position":"absolute",
-                "background-color":handleColors[direction],
+                "background-color": debug ? handleColors[direction] : "",
                 "margin":"0px",
                 "padding":"0px",
                 "height": direction === 'e' || direction === 'w'
@@ -480,7 +493,8 @@ still works */
                 "width": direction === 'n' || direction === 's'
                             ? boxWrapper.outerHeight()- 2*HANDLE_WIDTH + "px"
                             : HANDLE_WIDTH + "px",
-                "cursor": direction + "-resize"
+                "cursor": direction + "-resize",
+                "z-index":"101"
             };
 
             // top/bottom positioning 
