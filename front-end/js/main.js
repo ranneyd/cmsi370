@@ -1,7 +1,5 @@
 /*************************Setup*****************************/
 
-// JD: 12
-
 // this is the current channel we're watching
 var global_channel;
 // This is the list of channels to pick from
@@ -12,43 +10,22 @@ resetChannels();
 // We need to select a channel first-thing, so show this modal
 $("#channels").modal('show');
 
-// we only need this when we're resizing
-$(".resize-helper").hide();
 
-// Set up the JQuery UI resizable and draggable stuff
-$("#chat-div").resizable({
-	// You can resize it from any side/corner // JD: 1
-	handles: 'n, e, s, w, ne, nw, se, sw',
-	resize: function(event, ui){ // JD: 14, 15
-		changeChatValue("width", ui.size.width + "px");
-		changeChatValue("height", ui.size.height + "px");
-
-		// Resizing can affect these values too
-		changeChatValue("top", ui.position.top + "px");
-		changeChatValue("left", ui.position.left + "px");
-	},
-	start: function(event, ui){ // JD: 14, 15
-		$(".resize-helper").show();
-	},
-	stop: function(event, ui){ // JD: 14, 15
-		$(".resize-helper").hide();
-	}
-}).draggable({
-	drag: function(event, ui){ // JD: 14, 15
-		changeChatValue("top", ui.position.top + "px");
-		changeChatValue("left", ui.position.left + "px");
-	}
-// Let's throw in a "make it completely opaque when hovered on" action
-}).hover(function(){ // JD: 14, 15
+$("#chat-div").manipulate( function (box, props) {
+	$.each(["top", "left", "bottom", "right", "height", "width"], function (key, elem) {
+		document.cookie = global_channel+elem+"="+props[elem];
+	});
+})
+.hover(function(){
 	$("#chat-div").attr("data-opacity", $("#chat-div").css("opacity"));
 	changeChatValue("opacity", 1);
-},function(){ // JD: 14, 15
+},function(){ 
 	changeChatValue("opacity", 	$("#chat-div").attr("data-opacity"));
 });
 
 $('#opacity').slider({
-	formatter: function(value) { // JD: 14, 15 .....you get the point :)
-		return 'Opacity: ' + parseInt(value*100) + "%"; // JD: 9
+	formatter: function(value) {
+		return 'Opacity: ' + parseInt(value*100) + "%";
 	}
 });
 
@@ -100,14 +77,11 @@ $("#minimize").click(function(){
 	if(icon.hasClass("glyphicon-minus")){ // JD: 15, 16
 		// Save as an html attribute the height we're returning to
 		$(this).attr("data-og-height", $("#chat-div").css("height"));
-		// We don't want it resizable when it's minimized
-		$("#chat-div").resizable("disable");
 		// Yay animations!
 		$("#chat-div").animate({"height":"50px"});
 		icon.removeClass("glyphicon-minus").addClass("glyphicon-plus");
 	}
 	else{ // JD: 17
-		$("#chat-div").resizable("enable");
 		$("#chat-div").animate({"height":$(this).attr("data-og-height")});
 		icon.removeClass("glyphicon-plus").addClass("glyphicon-minus");
 	}
@@ -182,13 +156,13 @@ function setFromCookie(channel){
 
     // JD: 21
 	if(width)
-		$("#chat-div").css("width", width);
+		$("#chat-div").parent().css("width", width + "px" );
 	if(height)
-		$("#chat-div").css("height", height);
+		$("#chat-div").parent().css("height", height + "px");
 	if(top)
-		$("#chat-div").css("top", top);
+		$("#chat-div").parent().css("top", top + "px");
 	if(left)
-		$("#chat-div").css("left", left);
+		$("#chat-div").parent().css("left", left + "px");
 	if(opacity)
 		$("#chat-div").css("opacity", opacity);
 }

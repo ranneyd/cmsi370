@@ -7,7 +7,6 @@
     <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap-slider.css">
     <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script> <!-- JD: 3 -->
-    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/bootstrap-slider.js"></script>
 </head>
@@ -26,9 +25,9 @@
      chat window moves via JQuery UI's draggable and resizable, and those
      manipulate the element with inline styles anyway. So these are just the 
      default values. --> <!-- JD: 5 -->
-<div id="chat-div" style="  top:10%;
+<div id="chat-div" style="  top:100px;
                             left:0px;
-                            height:80%;
+                            height:700px;
                             width:400px;
                             opacity:0.7;">
     <!-- This is where the twitch chat lives. It has no source because it's
@@ -73,11 +72,6 @@
             </div>
         </nav>
     </div>
-    <!-- There are some problems with the iframe and the resize event where, if 
-         you go to fast, you enter the iframe so the resize cursor tracking
-         can't do it's thing. So this is going to cover the whole div when
-         we're resizing--> <!-- JD: 7 -->
-    <div class="resize-helper"></div>
 </div>
 
 <!-- Stream Menu modal -->
@@ -225,6 +219,9 @@
         </div>
     </div>
 </div>
+
+<script type="text/javascript" src="../widget-from-scratch/manipulate.js"></script>
 <script type="text/javascript" src="js/main.js"></script>
+
 </body>
 </html>
