@@ -50,13 +50,15 @@ still works */
     $.fn.manipulate = function ( callback, debug ) {
 
         var boxWrapper = this.wrap("<div></div>").parent(),
+            z_index = parseInt(this.css("z-index") || 1),
             blockerDiv = $("<div>").css({
+                "position":"absolute",
                 "width": "100%",
                 "height": "100%",
                 "left":"0px",
                 "top":"0px",
                 "background-color": debug ? "yellow" : "",
-                "z-index":"100"
+                "z-index":z_index+1
             }).appendTo(boxWrapper).hide();
 
         /* DRAGGING */
@@ -80,7 +82,8 @@ still works */
             "top": this.css("top") === "auto" ? "0px" : this.css("top"),
             "bottom": this.css("bottom") === "auto" ? "" : this.css("bottom"),
             "padding":"0px",
-            "margin":"0px"
+            "margin":"0px",
+            "z-index":z_index
         } );
 
         this.css({
@@ -136,6 +139,8 @@ still works */
                 "right": newBoxPos.right,
                 "top": newBoxPos.top,
                 "bottom": newBoxPos.bottom,
+                "height": newBoxPos.height,
+                "width": newBoxPos.width,
                 "leftSide": newBoxPos.left < newBoxPos.right,
                 "topSide": newBoxPos.top < newBoxPos.bottom
             }
@@ -181,6 +186,8 @@ still works */
                     "top":  mouse.y - target.deltaY - parent.innerTop,
                     "right": parent.innerRight - mouse.x - (box.width - target.deltaX),
                     "bottom": parent.innerBottom - mouse.y - (box.height - target.deltaY),
+                    "width": box.width,
+                    "height":box.height
                 };
 
             // check left side. Remember it cannot leave the parent.
@@ -517,6 +524,12 @@ still works */
 
         $.each(handleNames, function(index, direction) {
             handleStyles[direction] = {
+                "-webkit-user-select": "none",
+                "khtml-user-select": "none",
+                "-moz-user-select": "none",
+                "-ms-user-select": "none",
+                "user-select": "none",
+
                 "position":"absolute",
                 "background-color": debug ? handleColors[direction] : "",
                 "margin":"0px",
@@ -525,10 +538,10 @@ still works */
                             ? boxWrapper.outerHeight()- 2*HANDLE_WIDTH + "px"
                             : HANDLE_WIDTH + "px",
                 "width": direction === 'n' || direction === 's'
-                            ? boxWrapper.outerHeight()- 2*HANDLE_WIDTH + "px"
+                            ? boxWrapper.outerWidth()- 2*HANDLE_WIDTH + "px"
                             : HANDLE_WIDTH + "px",
                 "cursor": direction + "-resize",
-                "z-index":"101"
+                "z-index":z_index+2
             };
 
             // top/bottom positioning 
