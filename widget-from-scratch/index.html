@@ -3,7 +3,7 @@
     <head>
         <title>Manipulate.js Demo</title>
     </head>
-    <style type="text/css">
+    <style type="text/css"> /* JD: 2 */
         html, body{
             height:100%;
             width:100%;
@@ -58,7 +58,7 @@
         <!-- Code that is totally specific to this page. -->
         <script type="text/javascript">
             (function(){
-                $("#manipulable-object").manipulate( function (elem, props){
+                $("#manipulable-object").manipulate( function (elem, props){ // JD: 3
                     $("#top").html(props.top);
                     $("#bottom").html(props.bottom);
                     $("#left").html(props.left);

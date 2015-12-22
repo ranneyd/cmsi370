@@ -151,14 +151,14 @@ still works */
             if( newBoxPos.left < newBoxPos.right){
                 newBoxPos.right = ""
             }
-            else {
+            else { // JD: 6
                 newBoxPos.left = ""
             }
 
             if( newBoxPos.top < newBoxPos.bottom){
                 newBoxPos.bottom = ""
             }
-            else {
+            else { // JD: 6
                 newBoxPos.top = ""
             }
         }
@@ -373,6 +373,7 @@ still works */
                 jBox.find(".s-handle").outerWidth(newBoxPos.width - HANDLE_WIDTH * 2);
             };
 
+            // JD: 4
             var setLeft = function(){
                 // Note that this is relative to page, not parent
                 var newLeftOffest = mouse.x - target.deltaX;
@@ -549,11 +550,11 @@ still works */
             if (direction === "e" || direction === "w") {
                 handleStyles[direction]["top"] = HANDLE_WIDTH + "px";
             }
-            // North ones need to have a top of 0. This includes corners
+            // North ones need to have a top of 0. This includes corners // JD: 5
             else if(direction.indexOf("n") !== -1) {
                 handleStyles[direction]["top"] = "0px";
             }
-            // South ones need to have a bottom of 0. This includes corners
+            // South ones need to have a bottom of 0. This includes corners // JD: 5
             else {
                 handleStyles[direction]["bottom"] = "0px";
             }
@@ -563,11 +564,11 @@ still works */
             if (direction === "n" || direction === "s") {
                 handleStyles[direction]["left"] = HANDLE_WIDTH + "px";
             }
-            // west ones need to have a left of 0. This includes corners
+            // west ones need to have a left of 0. This includes corners // JD: 5
             else if(direction.indexOf("w") !== -1) {
                 handleStyles[direction]["left"] = "0px";
             }
-            // east ones need to have a right of 0. This includes corners
+            // east ones need to have a right of 0. This includes corners // JD: 5
             else {
                 handleStyles[direction]["right"] = "0px";
             }
@@ -589,3 +590,4 @@ still works */
     };
  
 } ( jQuery ));
+// JD: 7

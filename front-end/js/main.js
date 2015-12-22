@@ -11,7 +11,7 @@ resetChannels();
 $("#channels").modal('show');
 
 
-$("#chat-div").manipulate( function (box, props) {
+$("#chat-div").manipulate( function (box, props) { // JD 1211: 8
 	$.each(["top", "left", "bottom", "right", "height", "width"], function (key, elem) {
 		document.cookie = global_channel+elem+"="+props[elem];
 	});
