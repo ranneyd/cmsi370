@@ -1,7 +1,7 @@
 var BoxesTouch = {
     // Period, in millis, between two animations post-flick
     // Coefficient of friction we'll use to slow down sliding
-    FRICTION_COEF : .65,
+    FRICTION_COEF : .65, // JD: 2
 
     // Random boxes will have dimensions between MINIMUM_BOX_SIZE
     // and MAXIMUM_BOX_SIZE
@@ -13,7 +13,8 @@ var BoxesTouch = {
      * Sets up the given jQuery collection as the drawing area(s).
      */
     setDrawingArea: function (box) {
-        for(var i = 0; i < 3; ++i){
+        for(var i = 0; i < 3; ++i){ // JD: 3, 4, 5
+            // JD: 6
             var randomHeight = Math.round(Math.random()*(BoxesTouch.MAXIMUM_BOX_SIZE - BoxesTouch.MINIMUM_BOX_SIZE)) + BoxesTouch.MINIMUM_BOX_SIZE;
             var randomWidth = Math.round(Math.random()*(BoxesTouch.MAXIMUM_BOX_SIZE - BoxesTouch.MINIMUM_BOX_SIZE)) + BoxesTouch.MINIMUM_BOX_SIZE;
             var newBox = {
@@ -28,11 +29,11 @@ var BoxesTouch = {
                 box: $("<div>").css({
                         "height" : randomHeight,
                         "width" : randomWidth,
-                        "top": Math.round(Math.random()*(box.height()-randomHeight)),
-                        "left": Math.round(Math.random()*(box.width()-randomWidth)),
+                        "top": Math.round(Math.random()*(box.height()-randomHeight)), // JD: 7
+                        "left": Math.round(Math.random()*(box.width()-randomWidth)), // JD: 7
                     })
                     .addClass("box")
-                    .attr("data-index",BoxesTouch.boxes.length)
+                    .attr("data-index",BoxesTouch.boxes.length) // JD: 8
                     .appendTo(box)
             };
             BoxesTouch.boxes.push(newBox);
@@ -57,7 +58,7 @@ var BoxesTouch = {
             });
 
         window.ondevicemotion = function (event) {
-            $.each(BoxesTouch.boxes, function(key, elem){
+            $.each(BoxesTouch.boxes, function(key, elem){ // JD: 4, 9
                 elem.acceleration.x = -event.accelerationIncludingGravity.x * 0.2 || 0;
                 elem.acceleration.y = event.accelerationIncludingGravity.y *0.2 || 0;
             });
@@ -88,14 +89,14 @@ var BoxesTouch = {
                 var newY = touch.pageY - touch.target.deltaY;
 
                 // If they are moving it within the bounds of the parent
-                if(BoxesTouch.checkBounds($(touch.target), newX, newY)){
+                if(BoxesTouch.checkBounds($(touch.target), newX, newY)){ // JD: 4, 5
                     // Reposition the object.
                     touch.target.movingBox.offset({
                         left: touch.pageX - touch.target.deltaX,
                         top: touch.pageY - touch.target.deltaY
                     });
                 }
-                else{
+                else{ // JD: 10
                     // Presumably, the finger has moved, but the box has not,
                     // so we need new deltaX and deltaYs.
                     touch.target.deltaX = touch.pageX - touch.target.movingBox.offset().left;
@@ -185,8 +186,8 @@ var BoxesTouch = {
     /**
      * Recursively animate the box moving on its own post-flick
      */
-    slide: function() {
-        $.each(BoxesTouch.boxes, function(key, elem) {
+    slide: function() { // JD: 9
+        $.each(BoxesTouch.boxes, function(key, elem) { // JD: 9
             var box = elem.box,
                 velX = elem.velocity.x + elem.acceleration.x,
                 velY = elem.velocity.y + elem.acceleration.y,
@@ -196,19 +197,19 @@ var BoxesTouch = {
 
 
             // If it's going to move outside the container
-            if(!BoxesTouch.checkBounds(box, newPosX, newPosY)){
+            if(!BoxesTouch.checkBounds(box, newPosX, newPosY)){ // JD: 4, 5
                 
-                if(newPosX <= 0 || newPosX + box.width() > box.parent().width()){
+                if(newPosX <= 0 || newPosX + box.width() > box.parent().width()){ // JD: 4, 5
                     velX *= -BoxesTouch.FRICTION_COEF;
-                    if(Math.abs(elem.velocity.y) < elem.acceleration.y) {
+                    if(Math.abs(elem.velocity.y) < elem.acceleration.y) { // JD: 5
                         velY = 0;
                     }
                     newPosX = pos.left + velX;                   
                 }
-                if(newPosY <= 0 || newPosY + box.height() > box.parent().height()){
+                if(newPosY <= 0 || newPosY + box.height() > box.parent().height()){ // JD: 4, 5
                     
                     velY *= -BoxesTouch.FRICTION_COEF;
-                    if(Math.abs(elem.velocity.y) < elem.acceleration.y) {
+                    if(Math.abs(elem.velocity.y) < elem.acceleration.y) { // JD: 4
                         velY = 0;
                     }
 
@@ -223,17 +224,17 @@ var BoxesTouch = {
             elem.velocity.x = velX; 
             elem.velocity.y = velY;
 
-        } );
+        } ); // JD: 4
         
 
-        window.requestAnimationFrame(function(){
+        window.requestAnimationFrame(function(){ // JD: 4, 9
             BoxesTouch.slide();
         });
-    },
+    }, // JD: 11
     /**
      * Returns true if the box is entirely inside the parent container
      */
-    checkBounds: function(box, newX, newY){
+    checkBounds: function(box, newX, newY){ // JD: 4, 9
         // We benefit from the boxes being positioned relative to the parent.
         // 0 is the top/left and height/width is the position of the top/right
         return newX >= 0             // left side. 
